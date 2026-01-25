@@ -1,0 +1,156 @@
+:root{
+  --bg:#f6f8fc;
+  --panel:#ffffff;
+  --text:#0f172a;
+  --muted:#475569;
+  --border:rgba(15,23,42,.14);
+  --accent:#2563eb;
+  --good:#16a34a;
+  --danger:#dc2626;
+  --radius:14px;
+  --shadow:0 10px 24px rgba(2,6,23,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 15% 10%, rgba(37,99,235,.10), transparent 55%),
+    radial-gradient(900px 500px at 85% 30%, rgba(22,163,74,.08), transparent 60%),
+    var(--bg);
+  min-height:100vh;
+}
+a{color:var(--accent); text-decoration:none; font-weight:650}
+a:hover{text-decoration:underline}
+.topbar{
+  position:sticky; top:0; z-index:5;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:16px 20px;
+  background:rgba(255,255,255,.78);
+  border-bottom:1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+.brand{display:flex; align-items:center; gap:12px}
+.logo{
+  width:36px; height:36px; border-radius:12px;
+  background: linear-gradient(135deg, rgba(37,99,235,.95), rgba(22,163,74,.85));
+  box-shadow: var(--shadow);
+}
+.brand-title{font-weight:800; letter-spacing:.2px}
+.brand-sub{color:var(--muted); font-size:13px}
+.container{max-width:1100px; margin:22px auto; padding:0 16px 28px}
+.card{
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.card h2{
+  margin:0; padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  font-size:15px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+.content{padding:16px}
+.grid{display:grid; gap:16px}
+.grid.two{grid-template-columns:1fr 1fr}
+@media (max-width: 900px){ .grid.two{grid-template-columns:1fr} }
+.box{
+  border:1px solid var(--border);
+  background: rgba(2,6,23,.02);
+  border-radius: 12px;
+  padding:14px;
+}
+.muted{color:var(--muted); font-size:13px; line-height:1.35}
+label{display:block; margin:10px 0 6px; color:var(--muted); font-size:13px}
+input[type="text"], select{
+  width:100%;
+  padding:10px 11px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  outline:none;
+}
+input[type="file"]{
+  width:100%;
+  padding:10px 11px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+}
+input[type="file"]::file-selector-button{
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: rgba(37,99,235,.10);
+  color: var(--text);
+  cursor:pointer;
+  margin-right:10px;
+}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+button{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px;
+}
+button.primary{background: rgba(37,99,235,.12); border-color: rgba(37,99,235,.30)}
+button.good{background: rgba(22,163,74,.12); border-color: rgba(22,163,74,.28)}
+button.danger{background: rgba(220,38,38,.10); border-color: rgba(220,38,38,.26)}
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+thead th{
+  text-align:left;
+  padding:10px 10px;
+  font-size:12px;
+  color:var(--muted);
+  background: rgba(2,6,23,.03);
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0;
+}
+tbody td{
+  padding:10px 10px;
+  border-bottom:1px solid rgba(15,23,42,.08);
+  font-size:13px;
+}
+tbody tr:hover td{ background: rgba(37,99,235,.06) }
+.inputcell input{
+  width:100%;
+  padding:8px 9px;
+  border-radius:10px;
+  border:1px solid rgba(15,23,42,.16);
+  background: #fff;
+  color: var(--text);
+}
+.pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: rgba(2,6,23,.02);
+  color: var(--muted);
+  font-size:12px;
+}
+.pill strong{color:var(--text)}
+.notice{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px dashed rgba(15,23,42,.22);
+  background: rgba(2,6,23,.02);
+}

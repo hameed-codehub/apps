@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Elements Dictionary (PPI + NonPPI)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <div class="brand-title">Elements Dictionary (PPI + NonPPI)</div>
+      <div class="brand-sub">Upload and manage dictionary versions</div>
+    </div>
+  </div>
+  <a href="index.html">Home</a>
+</header>
+
+<main class="container">
+  <div class="grid two">
+    <div class="card">
+      <h2>Dictionary Upload & Save</h2>
+      <div class="content">
+        <div class="box">
+          <label>Dictionary XL Sheet (.xlsx)</label>
+          <input type="file" id="dictFile" accept=".xlsx,.xls">
+
+          <label>Dictionary Name</label>
+          <input type="text" id="dictName" placeholder="e.g., Forgery">
+
+          <label>Version</label>
+          <input type="text" id="dictVersion" placeholder="e.g., V0.3">
+
+          <div class="btnrow">
+            <button class="primary" onclick="saveDict()">Save Dictionary</button>
+            <button onclick="resetForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Available Dictionaries</h2>
+      <div class="content">
+        <div class="box" style="padding:0;">
+          <div style="max-height:420px; overflow:auto; border-radius:12px;">
+            <table id="dictTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Version</th>
+                  <th>Filename</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:10px;">
+          Demo defaults: <b>Forgery V0.1</b>, <b>Forgery V0.2</b>.
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function loadDicts(){ return JSON.parse(localStorage.getItem("ppi_dictionaries") || "[]"); }
+function saveDicts(d){ localStorage.setItem("ppi_dictionaries", JSON.stringify(d)); }
+function escapeHtml(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+
+function ensurePrepopulated(){
+  const existing = loadDicts();
+  if(existing.length > 0) return;
+
+  const fullFormats = {
+    "SSN": "###-##-####",
+    "DOB": "MM/DD/YYYY",
+    "Phone Number": "###-###-####",
+    "Email Address": "xxxxx@xxxxx.xxx",
+    "Account Number": "############"
+  };
+
+  saveDicts([
+    { name:"Forgery", version:"V0.1", filename:"Forgery_V0.1.xlsx", formats: fullFormats, savedAt: new Date().toISOString() },
+    { name:"Forgery", version:"V0.2", filename:"Forgery_V0.2.xlsx", formats: fullFormats, savedAt: new Date().toISOString() }
+  ]);
+}
+
+function renderTable(){
+  const dicts = loadDicts();
+  const tbody = document.querySelector("#dictTable tbody");
+  tbody.innerHTML = "";
+
+  dicts.forEach((d, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(d.name)}</td>
+      <td>${escapeHtml(d.version)}</td>
+      <td>${escapeHtml(d.filename || "")}</td>
+      <td><button class="danger" onclick="delDict(${idx})">Delete</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function saveDict(){
+  const fileEl = document.getElementById("dictFile");
+  const name = document.getElementById("dictName").value.trim();
+  const version = document.getElementById("dictVersion").value.trim();
+
+  if(!fileEl.files.length || !name || !version){
+    alert("Please choose XL file, and enter Name + Version.");
+    return;
+  }
+
+  const filename = fileEl.files[0].name;
+
+  const fullFormats = {
+    "SSN": "###-##-####",
+    "DOB": "MM/DD/YYYY",
+    "Phone Number": "###-###-####",
+    "Email Address": "xxxxx@xxxxx.xxx",
+    "Account Number": "############"
+  };
+
+  const dicts = loadDicts();
+  const payload = { name, version, filename, formats: fullFormats, savedAt: new Date().toISOString() };
+  const existingIdx = dicts.findIndex(d => d.name === name && d.version === version);
+
+  if(existingIdx >= 0) dicts[existingIdx] = payload;
+  else dicts.push(payload);
+
+  saveDicts(dicts);
+  resetForm();
+  renderTable();
+  alert("Dictionary saved (demo).");
+}
+
+function resetForm(){
+  document.getElementById("dictFile").value = "";
+  document.getElementById("dictName").value = "";
+  document.getElementById("dictVersion").value = "";
+}
+
+function delDict(idx){
+  const dicts = loadDicts().filter((_, i) => i !== idx);
+  saveDicts(dicts);
+  renderTable();
+}
+
+ensurePrepopulated();
+renderTable();
+</script>
+</body>
+</html>

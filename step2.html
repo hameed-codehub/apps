@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrub PDF - Step 2</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .tabs{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .tabbtn{
+      padding:8px 10px; border-radius:999px; border:1px solid var(--border);
+      background: rgba(2,6,23,.02); cursor:pointer; font-weight:700; font-size:12px; color:var(--muted);
+    }
+    .tabbtn.active{ background: rgba(37,99,235,.12); border-color: rgba(37,99,235,.30); color: var(--text); }
+    .count{ font-weight:800; color: var(--text); }
+    .rowhint{ margin-top:10px; }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <div class="brand-title">Review & Submit</div>
+      <div class="brand-sub">Elements grouped by PPI / Non-PPI / Auto-identified PPI</div>
+    </div>
+  </div>
+  <a href="index.html">Home</a>
+</header>
+
+<main class="container">
+  <div class="card">
+    <h2>
+      Context
+      <span class="pill" id="ctxPill"><strong>Status:</strong> Ready</span>
+    </h2>
+    <div class="content">
+      <div class="box" id="contextBox"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h2>Identified Elements</h2>
+    <div class="content">
+      <div class="tabs" id="tabs"></div>
+
+      <div style="max-height:520px; overflow:auto; border-radius:12px;">
+        <table id="ppiTable">
+          <thead>
+            <tr>
+              <th style="width:80px;">Page #</th>
+              <th style="width:200px;">Element</th>
+              <th style="width:180px;">Marked As</th>
+              <th style="width:190px;">Value Format (XL)</th>
+              <th>Value Found</th>
+              <th style="width:280px;">Replace With</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="btnrow">
+        <button class="primary" onclick="submitAndGenerate()">Submit & Generate (Mock)</button>
+      </div>
+
+      <div class="notice muted rowhint">
+        The system will use exactly what is entered in <b>Replace With</b> when you submit.
+      </div>
+
+      <div class="links" id="downloads" style="display:none; margin-top:12px;">
+        <a id="outTxt" href="#" download="scrubbed_output_mock.txt">Download scrubbed output</a>
+        <a id="outCsv" href="#" download="scrub_report.csv">Download change report</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function getActiveDictionary(){
+  try { return JSON.parse(localStorage.getItem("ppi_active_dictionary") || "null"); }
+  catch(e){ return null; }
+}
+function getActivePdfName(){ return localStorage.getItem("ppi_active_pdf_name") || "Unknown.pdf"; }
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+
+const dict = getActiveDictionary();
+const pdfName = getActivePdfName();
+
+if(!dict){
+  alert("No active dictionary selected. Go back to Step 1.");
+  window.location = "step1.html";
+}
+
+document.getElementById("contextBox").innerHTML =
+  "<div class='pill'><strong>Dictionary:</strong> " + escapeHtml(dict.name) + " (" + escapeHtml(dict.version) + ")</div> " +
+  "<div class='pill'><strong>PDF:</strong> " + escapeHtml(pdfName) + "</div>";
+
+/*
+  category:
+   - PPI_DICT: element marked as PPI by dictionary
+   - NONPPI_DICT: element marked as Non-PPI by dictionary
+   - PPI_AUTO: element identified as PPI automatically by the system
+*/
+const results = [
+  { page: 3,  field: "Account Number", category: "PPI_DICT",     found: "0019283746" },
+  { page: 7,  field: "Name",           category: "PPI_DICT",     found: "John A. Smith" },
+  { page: 10, field: "Loan ID",        category: "NONPPI_DICT",  found: "LN-2026-000192" },
+  { page: 12, field: "Property City",  category: "NONPPI_DICT",  found: "Dallas" },
+  { page: 22, field: "SSN",            category: "PPI_AUTO",     found: "123-45-6789" },
+  { page: 41, field: "Email Address",  category: "PPI_AUTO",     found: "john.smith@email.com" },
+  { page: 58, field: "Phone Number",   category: "PPI_DICT",     found: "555-123-0987" },
+  { page: 60, field: "DOB",            category: "PPI_DICT",     found: "02/15/1980" }
+];
+
+const CATEGORY_LABELS = {
+  "PPI_DICT": "PPI (Dictionary)",
+  "NONPPI_DICT": "Non-PPI (Dictionary)",
+  "PPI_AUTO": "PPI (Auto Identified)"
+};
+
+const tabs = [
+  { key: "ALL", label: "All" },
+  { key: "PPI_DICT", label: "Elements Marked as PPI" },
+  { key: "NONPPI_DICT", label: "Elements Marked as Non-PPI" },
+  { key: "PPI_AUTO", label: "Elements Identified as PPI Automatically" }
+];
+
+let activeTab = "ALL";
+
+// Persist Replace With values even when switching tabs
+let valueMap = {}; // key: page||field => value
+
+function keyFor(r){ return r.page + "||" + r.field; }
+
+function countFor(key){
+  if (key === "ALL") return results.length;
+  return results.filter(r => r.category === key).length;
+}
+
+function renderTabs(){
+  const wrap = document.getElementById("tabs");
+  wrap.innerHTML = "";
+  tabs.forEach(t => {
+    const btn = document.createElement("button");
+    btn.className = "tabbtn" + (t.key === activeTab ? " active" : "");
+    btn.type = "button";
+    btn.onclick = () => { saveCurrentInputs(); activeTab = t.key; renderTabs(); renderTable(); };
+    btn.innerHTML = t.label + ' <span class="count">(' + countFor(t.key) + ')</span>';
+    wrap.appendChild(btn);
+  });
+}
+
+function getFiltered(){
+  if (activeTab === "ALL") return results;
+  return results.filter(r => r.category === activeTab);
+}
+
+function renderTable(){
+  const tbody = document.querySelector("#ppiTable tbody");
+  tbody.innerHTML = "";
+
+  const filtered = getFiltered();
+  filtered.forEach((r, idx) => {
+    const fmt = (dict.formats && dict.formats[r.field]) ? dict.formats[r.field] : "(not in XL)";
+    const k = keyFor(r);
+    const currentVal = (valueMap[k] !== undefined) ? valueMap[k] : r.found;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.page}</td>
+      <td>${escapeHtml(r.field)}</td>
+      <td>${escapeHtml(CATEGORY_LABELS[r.category] || r.category)}</td>
+      <td>${escapeHtml(fmt)}</td>
+      <td>${escapeHtml(r.found)}</td>
+      <td class="inputcell"><input data-key="${escapeHtml(k)}" value="${escapeHtml(currentVal)}"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // update map on input
+  tbody.querySelectorAll("input[data-key]").forEach(inp => {
+    inp.addEventListener("input", (e) => {
+      valueMap[e.target.dataset.key] = e.target.value;
+    });
+  });
+}
+
+function saveCurrentInputs(){
+  document.querySelectorAll("input[data-key]").forEach(inp => {
+    valueMap[inp.dataset.key] = inp.value;
+  });
+}
+
+function submitAndGenerate(){
+  saveCurrentInputs();
+
+  let out = "MOCK SCRUBBED PDF OUTPUT\n\n";
+  out += "Dictionary: " + dict.name + " (" + dict.version + ")\n";
+  out += "PDF: " + pdfName + "\n\nReplacements:\n";
+
+  let csv = "Category,Page,Field,XL_Format,Found,Replaced_With\n";
+
+  results.forEach((r) => {
+    const fmt = (dict.formats && dict.formats[r.field]) ? dict.formats[r.field] : "(not in XL)";
+    const repl = (valueMap[keyFor(r)] !== undefined) ? valueMap[keyFor(r)] : r.found;
+
+    out += CATEGORY_LABELS[r.category] + " | Page " + r.page + " | " + r.field + " | " + repl + "\n";
+
+    function esc(x){ return ('"' + String(x).replaceAll('"','""') + '"'); }
+    csv += [CATEGORY_LABELS[r.category], r.page, r.field, fmt, r.found, repl].map(esc).join(",") + "\n";
+  });
+
+  const blob1 = new Blob([out], {type:"text/plain"});
+  const blob2 = new Blob([csv], {type:"text/csv"});
+
+  document.getElementById("outTxt").href = URL.createObjectURL(blob1);
+  document.getElementById("outCsv").href = URL.createObjectURL(blob2);
+  document.getElementById("downloads").style.display = "block";
+  document.getElementById("ctxPill").innerHTML = "<strong>Status:</strong> Generated downloads";
+}
+
+renderTabs();
+renderTable();
+</script>
+</body>
+</html>

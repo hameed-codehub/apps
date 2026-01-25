@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrub PDF - Step 1</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <div class="brand-title">Scrub PDF</div>
+      <div class="brand-sub">Select dictionary → upload PDF → run extraction</div>
+    </div>
+  </div>
+  <a href="index.html">Home</a>
+</header>
+
+<main class="container">
+  <div class="card">
+    <h2>Step 1</h2>
+    <div class="content">
+      <div class="box">
+        <label>Select Elements Dictionary</label>
+        <select id="dictSelect"></select>
+
+        <label>Upload PDF</label>
+        <input type="file" id="pdfFile" accept="application/pdf,.pdf">
+
+        <div class="btnrow">
+          <button class="primary" onclick="runExtraction()">Run Extraction</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function loadDicts(){ return JSON.parse(localStorage.getItem("ppi_dictionaries") || "[]"); }
+
+function ensurePrepopulated(){
+  const existing = loadDicts();
+  if(existing.length > 0) return;
+
+  const fullFormats = {
+    "SSN": "###-##-####",
+    "DOB": "MM/DD/YYYY",
+    "Phone Number": "###-###-####",
+    "Email Address": "xxxxx@xxxxx.xxx",
+    "Account Number": "############"
+  };
+
+  localStorage.setItem("ppi_dictionaries", JSON.stringify([
+    { name:"Forgery", version:"V0.1", filename:"Forgery_V0.1.xlsx", formats: fullFormats, savedAt: new Date().toISOString() },
+    { name:"Forgery", version:"V0.2", filename:"Forgery_V0.2.xlsx", formats: fullFormats, savedAt: new Date().toISOString() }
+  ]));
+}
+
+function populateDictionaries(){
+  const dicts = loadDicts();
+  const sel = document.getElementById("dictSelect");
+  sel.innerHTML = "";
+
+  dicts.forEach((d, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.text = d.name + " | " + d.version + " | " + (d.filename || "");
+    sel.appendChild(opt);
+  });
+}
+
+function runExtraction(){
+  const dicts = loadDicts();
+  const sel = document.getElementById("dictSelect");
+  const pdfEl = document.getElementById("pdfFile");
+
+  if(!dicts.length){
+    alert("No dictionaries found. Go to dictionary page first.");
+    return;
+  }
+  if(!pdfEl.files.length){
+    alert("Please upload a PDF.");
+    return;
+  }
+
+  const chosen = dicts[Number(sel.value)];
+  localStorage.setItem("ppi_active_dictionary", JSON.stringify(chosen));
+  localStorage.setItem("ppi_active_pdf_name", pdfEl.files[0].name);
+
+  window.location = "step2.html";
+}
+
+ensurePrepopulated();
+populateDictionaries();
+</script>
+</body>
+</html>
