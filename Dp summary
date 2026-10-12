@@ -1,0 +1,63 @@
+Deployment Pipeline and Production Readiness Review
+Participants: Rob, Siri, Hamid, Sai, and Ajit
+Recording Duration: 00:41:18
+🧭 Overview
+The meeting aligned the existing Multifamily deployment capabilities with the standard MDTC V2 pipeline and separated the immediate development path from production compliance work. The agreed approach is to reuse existing Artifactory-to-S3, IC deployer, and AWS pipeline capabilities where feasible, while validating and transforming the required CloudFormation Templates (CFTs) for Freddy Mac production governance.
+The Shared Library pipeline will build and scan application artifacts, including the 45 FOS scan, and promote successful packages to JFrog artifactory; the IAC V2 pipeline will retrieve CFTs from Bitbucket and artifacts from Artifactory, promote them to S3, and execute the CloudFormation deployment.
+The initial deployment requires the Account bootstrap and Deploy pipeline CFTs, with a possible Deploy role CFT; the IAC repository must contain the CFTs, manifest, and pipeline configuration before promotion or deployment.
+Production readiness requires CFT metadata, IAC validator checks, Freddy Mac compliance, CMDB registration, audit tracking, and NFR evidence; a development setup may be established within the next week, followed by approximately two to three weeks of production-enablement work.
+✅ Action Items
+[ ] Prepare a diagram or document describing the required work, implementation paths, responsibilities, and timeline for management communication by early Monday @Rob
+[ ] Arrange the Monday morning implementation review with Rob, Siri, Hamid, and Sai @Ajit
+[ ] Walk the team through the existing Multifamily bootstrap and deployment process on Monday @Deepak
+[ ] Run the Account bootstrap and Deploy pipeline CFTs through the IAC validator to identify current Checkov, YAML lint, and Python lint findings @Rob
+[ ] Review the sample repository and assist Sai with deploying the completed CFTs to Jenkins pipelines @Sai
+📝 Main Topics
+1. Pipeline Architecture, Artifact Promotion, and Tool Reuse
+Background:
+The team needed to clarify the overloaded term “pipeline” and determine how the shared library flow, IAC V2 pipeline, AWS pipeline, Artifactory, S3, Bitbucket, and deployment roles interact.
+Key Conclusion/Resolution:
+The two pipeline flows have separate responsibilities. The Shared Library pipeline packages repository content such as JAR and ZIP files, runs the 45 FOS scan, and promotes successful artifacts to JFrog artifactory. The IAC V2 pipeline handles CFT promotion and execution by retrieving CFTs from Bitbucket, obtaining dependencies from Artifactory, placing the CFT and promoted artifact in S3, and deploying through CloudFormation.
+Existing tools should be reused where compatible with the standard MDTC V2 pipeline. The Artifactory-to-S3 utility is already used frequently in the V2 pipeline, and the IC deployer can deploy CloudFormation stacks through its deployment role. Artifactory retrieval was considered relatively straightforward, although the exact integration points still require review.
+Responsibility and Actions/Follow-up Actions:
+Rob will provide documentation for the existing Artifactory-to-S3 utility.
+The team will determine which existing deployment steps can run directly in MDTCV2 pipeline and which require modification or recoding.
+The IAC V2 pipeline will use Bitbucket as the CFT source and Artifactory as the application-artifact source; CFTs will not be sourced from Artifactory.
+2. Multifamily Bootstrap and AWS Deployment Flow
+Background:
+Multifamily’s current deployment state is largely manual. The application ZIP was manually built and copied to S3, while bootstrap steps created the bucket and CloudFormation roles required by the deployment process. Multifamily subsequently lost access to the environment and can no longer move the ZIP into the S3 bucket.
+Key Conclusion/Resolution:
+The reviewed Multifamily process uses an Account bootstrap CFT and a Deploy pipeline CFT. The bootstrap prepares the S3 bucket and roles, while the Deploy pipeline CFT is intended to create an AWS CodePipeline containing CodeBuild and CodeDeploy. Multifamily-specific configuration is documented in the MFA deployment document. Once the required artifact and parameters are available, the AWS pipeline is intended to deploy the application automatically.
+Responsibility and Actions/Follow-up Actions:
+Deepak will provide a detailed walkthrough of the existing bootstrap and deployment flow.
+The team will use the IAC V2 pipeline to establish the initial development deployment path rather than resolving the full production process first.
+The team will review whether a separate Deploy role CFT is required and whether Account bootstrap functions can be combined or reduced when using the IC deployer.
+Unresolved Matters:
+The team has not confirmed whether uploading the ZIP to S3 alone triggers deployment in the current Multifamily account or whether additional manual execution is required. The need for the Account bootstrap and a separate CloudFormation service role also remains subject to review.
+3. IAC Repository, CFT Contents, and Metadata Compliance
+Background:
+The required CFTs and related files are currently embedded in the original repository, whereas the IAC process requires infrastructure assets to be available in the IAC repository. Existing CFTs also do not follow the required metadata pattern.
+Key Conclusion/Resolution:
+The IAC repository must contain the Account bootstrap and Deploy pipeline CFTs, the manifest, and additional pipeline configuration before the IAC V2 pipeline can promote or deploy them. The manifest centralizes information previously supplied through parameter files, including the stack name, parameters, tags, and S3 location of the CFT.
+Each CFT must include at least the template name and template type, together with the metadata required to identify, register, and track the CFT through CMDB, audit processes, NFR evidence, production record-keeping, and Freddy Mac governance. CFTs brought into Freddy Mac must follow the metadata template registered at Freddy Mac.
+Responsibility and Actions/Follow-up Actions:
+Rob’s team will use the IAC validator, including Checkov, YAML lint, and Python lint, to evaluate the CFTs.
+The team will copy or extract the required CFT assets into the IAC repository and establish a repeatable process for maintaining them there.
+The build process may copy the relevant files from the existing repository and apply the required tags or labels.
+The team will determine whether template transformation should occur in the CloudCom repository or the team’s repository; much of the transformation may be scripted.
+The sample repository containing Lambda functions and related library-sharing configuration has been provided to Sai.
+Unresolved Matters:
+The team has not confirmed whether the CFTs can be used after metadata changes alone or whether prohibited resources, configurations, or structural issues will require further modification. The current parameter files also include one file described as not up to date.
+4. Development Enablement and Production Readiness
+Background:
+The team had previously believed that most implementation work was complete, but the review identified remaining work across infrastructure preparation, repository organization, roles, validation, metadata, governance, and deployment tooling.
+Key Conclusion/Resolution:
+The implementation will proceed on two parallel tracks. The short-term development track will configure the IAC V2 pipeline to retrieve artifacts from Artifactory and CFTs from Bitbucket, then deploy through CloudFormation using a relatively manual process. The production track will translate the templates into the compliant CFT infrastructure format, apply the required metadata, run validation and certification, address findings, and establish the required audit, CMDB, NFR, and record-keeping controls.
+A functional non-production setup may be established within the next week. Over the following two to three weeks, the team expects to implement sufficient infrastructure and tooling to remove temporary manual workarounds and support the production process.
+Responsibility and Actions/Follow-up Actions:
+The immediate implementation will focus on pipeline execution, required content, roles, and tooling while minimizing changes to the application deployment logic.
+The IAC pipeline will prevent deployment when CFTs are absent from the IAC repository or fail required scans.
+Rob will document the remaining work and implementation paths so the team can establish a reliable production timeline.
+Siri will provide a more detailed walkthrough of the relevant templates and deployment process on Monday.
+Unresolved Matters:
+The production timeline depends on the IAC validator results and the extent of CFT changes required for Freddy Mac compliance. Potential compliance failures remain unconfirmed until the templates are evaluated.
