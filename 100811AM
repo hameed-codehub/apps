@@ -1,0 +1,101 @@
+Shared Library AWS Deployment and CI_CD Automation Plan
+🧭 Overview
+The meeting aligned the deployment of the shared library through two CloudFormation scopes: account bootstrap, executed once per AWS account, and environment deployment, executed once per environment. The team agreed to replace manual procedures with an automated IAC and MDTC v2 pipeline covering bootstrap, environment configuration, secret handling, CI packaging, Docker image publication to ECR, and application deployment. Key dependencies remain the selection of a clean deployment account, final repository ownership, Artifactory rotation validation, Ping environment and promotion rules, required network values, and platform gateway details.
+Account bootstrap will create the CA S3 location, use the static Central CA KMS key, configure registry access in Secrets Manager, establish required roles and tags, and be validated from a clean account.
+Each environment will use a customized configuration file and an Artifactory-based deployment pipeline, with CI scans, .zip packaging, artifact publication, and environment-specific CloudFormation parameters.
+Ping integration will use SAML for the UI and JWT for Jobs API access; Admin role and Viewer role entitlements must be created and mapped to application groups.
+Repository access, IAC pipeline ownership, VPC values, the correct non-production Ping endpoint, secret-rotation behavior, and platform gateway tenant details require follow-up.
+✅ Action Items
+[ ] Select the account for ground-zero automation, considering SFC004 and set 0003, after ownership and organizational checks. @speaker1
+[ ] Convert the manual bootstrap, secret, deployment, Docker, and ECR procedures into the programmatic IAC and MDTC v2 pipeline. @Rob Fernie
+[ ] Share the existing repository, raise access requests for Topaz’s team, and establish the IAC pipeline repository with MDTC. @speaker1
+[ ] Include Rob Fernie in subsequent meetings and invitations. @speaker1
+[ ] Prepare the IAC pipeline before the next review and discuss its configuration in the planned afternoon meeting.
+[ ] Create one NHID secret for automation and verify that bootstrap-generated secrets are correct and active.
+[ ] Validate the Docker and NHID rotation schedules and test the plaintext registry-configuration rotation process.
+[ ] Copy and rename the environment configuration file, then customize its CloudFormation parameters and deployment-specific application ID.
+[ ] Change the pipeline configuration from S3 mode to Artifactory mode and remove obsolete consolidated-script documentation. @speaker3
+[ ] Provide the required artifact filename, .zip structure, naming convention, and packaging format. @speaker3
+[ ] Build the shared-library .zip and wheel artifacts using the existing build code. @speaker1’s team
+[ ] Provide the VPC ID, private routable subnet IDs, Lambda subnet ID, CodeBuild security group, S3 VPC endpoint, and private API Gateway endpoint ID. @speaker2
+[ ] Open the Ping request using the supplied template and create the required tool and application entitlements.
+[ ] Provide the Ping request and configuration templates. @speaker3
+[ ] Confirm the correct Ping environment and promotion path for development, non-production, and production with Shashank and/or the Ping team.
+[ ] Obtain the SAML metadata from the Ping team after Ping configuration and upload it into Cognito.
+[ ] Create the platform gateway tenant ID and provide the gateway URL. @Kai
+[ ] Arrange recurring checkpoints and a follow-up meeting for the automation work.
+📝 Main Topics
+1. Account Bootstrap, Infrastructure Prerequisites, and Secret Rotation
+Background:
+The deployment requires account-level resources before any environment pipeline can run. The documented procedure is in enterprise/docs/MFA deployment.md; the manual authentication-related first step is not part of the required bootstrap flow.
+Key Conclusion/Resolution:
+Account bootstrap is the first CloudFormation stage and runs once per AWS account. It creates one S3 bucket for the CA file, copies the CA from the metadata location, and creates the role ARN referenced by environment configuration. The static Central CA KMS key provides access to and encryption for the CA in the metadata bucket.
+The bootstrap also requires the target account permission boundary, application-owner and ABAC tags, and plaintext Docker, PIP, UV, and NPM configuration values in Secrets Manager for Artifactory and registry access. The resulting account must be validated before environment deployment proceeds.
+Secret rotation is separate from bootstrap and is handled once per account. The implementation reads the NHID-related secret and updates plaintext configuration files, including Docker, PIP, UV, and NPM or NPM RC content. Docker and NHID rotate independently, so their schedules must be synchronized. The rotation implementation had not yet been tested.
+Responsibility and Actions/Follow-up Actions:
+Topaz will support execution of account bootstrap.
+Rob Fernie will clean up the manual process and move bootstrap and secret handling into automation.
+The team will establish the process from a clean account and use one NHID secret for the automated flow.
+Secret values will be checked after bootstrap, and rotation will be handed off to Perdip once the process is validated.
+Communication issues involving AutoFactory may be worked through with Brian Hitchens.
+Unresolved Matters:
+The final ground-zero account has not been selected. SFC004 was proposed because it has no business workloads, while set 0003 has an existing manually created instance but no completed bootstrap. The team must confirm the account choice and ownership before execution.
+2. Repository Ownership, Source Control, and Shared-Library Release Packaging
+Background:
+The shared-library repository was created from the master V2 branch, but the repository structure, ownership model, access list, and release packaging requirements were not fully settled. The shared library differs from a standard microservice because the existing code can produce both .zip and wheel artifacts.
+Key Conclusion/Resolution:
+The existing repository will remain the golden copy and single source of truth, while a clone or fork may support ongoing changes. The release artifact will be prepared for the MDTC v2 pipeline and must contain the required shared-library structure, version, sig file, and version ID.
+The CI process will clone the repository, run the required scans including Sonar, package the code from the root-folder context using the documented Python command and exclusions, and publish the resulting .zip. The exact internal structure, filename, and complete packaging format still require confirmation.
+Responsibility and Actions/Follow-up Actions:
+speaker1 will share the existing repository.
+Topaz’s team will provide its access list and raise the required access requests.
+The team will create an IAC pipeline repository and include MDTC.
+speaker1’s team will use the existing build code to create the .zip and wheel artifacts.
+speaker3 will provide the definitive artifact naming and packaging requirements.
+Rob Fernie will lead cleanup of the pipeline-related implementation and must participate in follow-up meetings.
+Unresolved Matters:
+The final repository arrangement—frozen repository, clone, fork, or another shared repository—has not been finalized, although the golden copy remains the required source of truth.
+3. Environment Deployment Pipeline and Configuration
+Background:
+Environment deployment is separate from account bootstrap and requires environment-specific CloudFormation parameters. The reviewed pipeline was tested in the MSA account, while the current example and documentation still use S3 mode and contain obsolete script references.
+Key Conclusion/Resolution:
+The environment deployment pipeline is the second CloudFormation stage and runs once per environment. It requires the template name, stack name, VPC ID, private subnet, CodeBuild security group, Lambda subnet ID, S3 VPC endpoint, and private API Gateway endpoint ID.
+The pipeline will move from S3 mode to Artifactory mode. CI will clone the repository, run scans, create the required .zip, and publish it to Artifactory; Artifactory mode allows a deployer to select the release version, whereas S3 mode relies on S3 versioning. The pipeline configuration key must reference the target environment file rather than the example test.yaml.
+Each environment must use a copied and renamed .yaml file. The file contains the bootstrap role ARN, application-owner and ABAC tags, application ID, Job ID, Job API, network values, API Gateway settings, secrets, logging, source and README URLs, feature flags, and entitlement mappings. The application ID illustrated as RX7742 must be replaced with the deployment-specific value; separate TPI app IDs may be used for isolation.
+Responsibility and Actions/Follow-up Actions:
+The deployment team will copy, rename, and customize the environment configuration file without modifying the example directly.
+speaker3 will provide the additional Artifactory script and parameter, together with the required package format.
+The team will remove or disregard obsolete documentation for scripts consolidated into two scripts.
+The deployment team will use CloudWatch for operational logs; Kibana is not the primary log destination.
+The deployment team will include the CodeBuild step that builds the Docker image and pushes it to ECR.
+Unresolved Matters:
+The final Artifactory configuration, exact .zip structure, complete parameter set, and any unused WAF-related configuration require validation before deployment.
+4. Network, Ping Authentication, and Entitlement Mapping
+Background:
+The application requires private network connectivity to Ping and separate authentication paths for UI users and programmatic consumers. Ping-side objects cannot be completed until the deployment configuration and request details are available.
+Key Conclusion/Resolution:
+The application must run in a private, routable subnet so it can communicate with Ping. The environment requires the VPC ID, private subnet IDs, Lambda subnet ID, CodeBuild security group, standard S3 VPC endpoint, and private API Gateway endpoint ID. The configured space name is beta; the Job API configuration is used by downstream systems and does not require a functional change.
+The UI and front end will use SAML. Programmatic and automated Jobs API access will use JWT. The initial Ping metadata value is only a placeholder because the metadata endpoint is not exposed. After Ping configuration, the Ping team will provide the SAML metadata file for upload to Cognito.
+For multifamily, the baseline entitlements are Admin role for configuration and Viewer role for document visibility without configuration access. If the application uses four roles, four corresponding entitlements are required. Ping groups must map directly to the application entitlements and application roles, and the same entitlement mapping is used by JWT configuration.
+Responsibility and Actions/Follow-up Actions:
+speaker2 owns the VPC-related work and will coordinate the required network values with the infrastructure team, including Topaz/Tobus if needed.
+The team will open a Ping ticket using the request template and create the required tool and application entitlements.
+The Ping team will provide SAML metadata after the Ping-side configuration is completed.
+The team will upload the metadata into Cognito and configure the required group attribute and group names.
+speaker2 may join a Ping coordination call if required.
+Unresolved Matters:
+The correct Ping environment and promotion path remain unresolved. ping dev is a Ping sandbox for configuration and software testing, while secure UAT was identified as the intended non-production environment. The team must confirm the development, UAT, and production mapping and ownership with Shashank and/or the Ping team.
+5. Platform Gateway, Runtime Features, and Resilience
+Background:
+The application includes platform gateway settings and optional runtime features that affect Bedrock access, completion processing, logging, and operational resilience.
+Key Conclusion/Resolution:
+Bedrock calls will use the platform gateway, which requires a tenant ID and URL. The circuit breaker remains enabled so repeated Bedrock failures do not cause continuous calls and normal processing can resume when Bedrock becomes available.
+The completion hook remains enabled and invokes a Lambda function that writes a log. The earlier MQ approach was not implemented because the MQ integration did not work; polling is used instead. The document knowledge base and MCP features remain disabled because of cost and security considerations. CloudWatch is used for logs, with info configured as the current log level and debug considered for Rob’s initial troubleshooting.
+Responsibility and Actions/Follow-up Actions:
+Kai will create the platform gateway tenant ID and provide the gateway URL.
+The deployment team will place the tenant ID and URL in the environment configuration.
+The team will retain the circuit breaker and configure the related operational settings.
+The team will keep the document knowledge base and MCP disabled for the current deployment.
+The deployment team will use the relevant Bitbucket repository and issue-tracking URL in the environment configuration.
+Unresolved Matters:
+The account hosting the platform gateway and the final tenant-integration details were not established during the meeting.
