@@ -1,0 +1,2589 @@
+speaker1 00:00:41
+.
+
+speaker1 00:04:33
+we can go through step
+
+speaker1 00:05:46
+secret rotation secret
+
+speaker1 00:06:07
+Connect to the order.
+
+speaker1 00:07:38
+Is she referring anyway the anyway the IAC pipeline?
+
+speaker1 00:08:12
+Anil is from MDLC team, I believe platform team, I mean AWS Freddy AWS guy.
+
+speaker1 00:08:51
+Yeah.
+
+speaker1 00:09:32
+Hi, Tupas.
+
+speaker1 00:09:34
+Good morning.
+
+speaker2 00:09:40
+Greetings.
+
+speaker2 00:09:41
+Did Rob accept this meeting?
+
+speaker2 00:09:42
+Just curious.
+
+speaker1 00:09:44
+Oh, Rob.
+
+speaker2 00:09:46
+Oh, he has a doctor's appointment.
+
+speaker1 00:09:48
+Oh, okay.
+
+speaker1 00:09:49
+So actually I thought Rob may not be helping with this one.
+
+speaker1 00:09:52
+I set up another meeting in the afternoon for the V2 pup, and I thought he's going to help the, is what I thought.
+
+speaker1 00:10:00
+You think Robbie's also needed here?
+
+speaker1 00:10:01
+I can add him later, but I think no.
+
+speaker2 00:10:04
+Yeah, I'm not quite sure what this is, so is this your setting up?
+
+speaker2 00:10:10
+Well, I'll just be on mute and let me know if I can help in some way.
+
+speaker1 00:10:13
+Yeah, sure, Thank you.
+
+speaker1 00:10:16
+Hey, Siri, can you hear us?
+
+speaker3 00:10:19
+Yes.
+
+speaker1 00:10:20
+Hey, thanks.
+
+speaker1 00:10:21
+Good morning.
+
+speaker1 00:10:24
+Let me open the camera.
+
+speaker1 00:10:47
+So Siri, just to update you, what we did was we tried to create a repo, a new repo for our shade lib.
+
+speaker1 00:10:59
+We also tried to kind of create a branch and then sync the code into the branch from the master V2 branch that you mentioned.
+
+speaker1 00:11:08
+So that's where we are.
+
+speaker1 00:11:09
+We set up the repo.
+
+speaker1 00:11:11
+I saw your agenda e-mail.
+
+speaker1 00:11:13
+I don't know, like, all of those things will be kind of we'll be creating in the repo, or are we gonna create in the AWS account itself?
+
+speaker3 00:11:25
+So I would say, like, in this meeting, I will show you right what we need, okay, to be able to do all those steps, okay, because, and so it's kind of tell you, know, how ready we are to the next step as well, okay, so that's what we thought.
+
+speaker3 00:11:44
+Is that good or how do you want?
+
+speaker1 00:11:46
+Sure, So you want to share the screen or you want me to, how do you want to?
+
+speaker3 00:11:56
+Yes, you have to share the screen.
+
+speaker3 00:11:58
+I can't, I actually don't have any all this information because everything's in your environment.
+
+speaker3 00:12:06
+So.
+
+speaker1 00:12:13
+Okay, so you do we need to log into AWS console or are we?
+
+speaker3 00:12:19
+No, let's go to the let's go to the repo.
+
+speaker3 00:12:23
+So, step 0, right?
+
+speaker3 00:12:26
+I send you like agenda which is actually contain the steps, so I think on the prerequisites.
+
+speaker3 00:12:37
+phase, which is phase zero.
+
+speaker3 00:12:39
+We probably have everything in the account already because this has been done.
+
+speaker3 00:12:45
+But in production, of course, we're going to have to do this.
+
+speaker1 00:12:49
+Okay, So this is in the account SFD001, right?
+
+speaker1 00:12:55
+I think you already set up this account.
+
+speaker1 00:12:57
+That's what you're mentioning, right?
+
+speaker1 00:12:59
+Okay.
+
+speaker3 00:13:00
+Yeah, this, it was previously one instance was previously deployed by Kai, so I would assume that there's some of these, and it's already been set up like VPC, you know, VPC endpoints and that kind of thing.
+
+speaker2 00:13:15
+OK, are you recording the values that were set up in a parameters file, or are you setting cloud formation?
+
+speaker2 00:13:21
+Are you saying it did use parameters for values?
+
+speaker2 00:13:25
+I understand that we need to have all this set up it makes sense.
+
+speaker2 00:13:29
+I'm just wondering, are you recording the VPC ID, the security group ID, et cetera, into a parameter store file or CloudFormation parameter store?
+
+speaker2 00:13:39
+How are you dealing with recording the IDs to use?
+
+speaker2 00:13:46
+Am I making sense?
+
+speaker3 00:13:47
+Yeah, So I think that's what I will show today, actually.
+
+speaker2 00:13:53
+Oh, I apologize.
+
+speaker2 00:13:54
+I just looked at step zero.
+
+speaker3 00:13:57
+I was like, I was good.
+
+speaker2 00:14:00
+I apologize.
+
+speaker3 00:14:01
+No problem.
+
+speaker3 00:14:02
+It's good segue.
+
+speaker3 00:14:04
+So step one, this is probably will be like something that the PE team will do.
+
+speaker3 00:14:10
+So this is not on you.
+
+speaker3 00:14:12
+Step 2 is let's get to the step 2 first, right?
+
+speaker3 00:14:15
+So which is account bootstrap.
+
+speaker3 00:14:18
+So we're going to bootstrap the account first.
+
+speaker3 00:14:21
+So that is so go to the script is in the enterprise folder.
+
+speaker3 00:14:28
+So, go to enterprise, OK?
+
+speaker3 00:14:32
+This is a top top of this is going to need your help here, so this is you, then go to the docs folder, docs, OK?
+
+speaker3 00:14:49
+The MFA, this is MFA deployment.
+
+speaker3 00:14:52
+So I'm showing you like, so there's a instruction here in some other files, but I'm going to show you exactly how to do it.
+
+speaker3 00:15:00
+So which is I documented in the MFA deployment.md.
+
+speaker3 00:15:05
+So click that one.
+
+speaker1 00:15:06
+Okay.
+
+speaker3 00:15:07
+Yeah.
+
+speaker3 00:15:09
+You can do the preview if you want.
+
+speaker3 00:15:13
+Easier to read.
+
+speaker3 00:15:13
+Okay.
+
+speaker1 00:15:19
+We do that preview.
+
+speaker3 00:15:21
+Yeah, right click, right click the file instead.
+
+speaker3 00:15:23
+Yeah, that's good.
+
+speaker3 00:15:24
+So this is like the manual step that I have to do, but skip step one.
+
+speaker3 00:15:29
+Those are like, authentication, that kind of thing.
+
+speaker1 00:15:32
+Okay.
+
+speaker3 00:15:34
+So go to scroll down.
+
+speaker3 00:15:38
+Okay, the account bootstrap.
+
+speaker3 00:15:41
+Here, purpose, this is what we have to do.
+
+speaker3 00:15:51
+So, this is just to deploy the account bootstrap which has, the which going to create one S3 bucket to store the CA file which is actually copied from the metadata location, so to so that everything else is.
+
+speaker3 00:16:17
+internally it's going to that talk to internal thing, like Artifactory gonna need CA, right?
+
+speaker3 00:16:25
+So we need that.
+
+speaker3 00:16:26
+So this is a step that to prepare the account with the CA.
+
+speaker3 00:16:30
+So this is the first CloudFormation that we have to do to first.
+
+speaker2 00:16:34
+Where did you get your KMS key from?
+
+speaker3 00:16:38
+Sorry, say that again.
+
+speaker2 00:16:40
+The KMS key ID, where did that populate from?
+
+speaker3 00:16:44
+The KMSI.
+
+speaker2 00:16:46
+The last thing at the very bottom, Central CA KMS key, Aaron.
+
+speaker3 00:16:53
+Yeah, this is, yeah, so that is a location.
+
+speaker3 00:16:57
+So you see that the CA is stored in the metadata.
+
+speaker3 00:17:02
+So to access that, we have to use the KMS key.
+
+speaker2 00:17:09
+So that's actually the KMS key that's encrypting the meta bucket.
+
+speaker2 00:17:14
+So it's going to be static.
+
+speaker3 00:17:16
+Yeah.
+
+speaker2 00:17:17
+OK.
+
+speaker3 00:17:19
+So the other static is the permission battery.
+
+speaker3 00:17:23
+This is going to be in your account in this, you know, whatever the account that it has.
+
+speaker3 00:17:29
+And then the Docker configuration, PIP configuration, UV configuration, NPM configuration, those are.
+
+speaker3 00:17:41
+the secret manager plain text that we're going to store the secret to access the Artifactory.
+
+speaker3 00:17:50
+So understood.
+
+speaker3 00:17:53
+Yeah.
+
+speaker2 00:17:54
+Okay, I'm good with all this.
+
+speaker1 00:17:56
+Okay, so, go ahead.
+
+speaker3 00:18:05
+I mean, any questions on this?
+
+speaker1 00:18:06
+No, I think, so do I think, are we gonna run it now or are we gonna do this?
+
+speaker1 00:18:13
+is gonna create S3 bucket as far as I understand, so we're gonna do it later or how is it?
+
+speaker3 00:18:19
+I think Topaz is going to help us.
+
+speaker1 00:18:21
+Okay.
+
+speaker2 00:18:22
+Yeah, I mean, no pads in team.
+
+speaker2 00:18:26
+I have a team behind me.
+
+speaker2 00:18:27
+But yes, all this makes sense to me.
+
+speaker2 00:18:30
+We'll probably adjust it a little bit so it's not a manual procedure because I don't like manual procedures.
+
+speaker2 00:18:36
+Is there a reason why you didn't put this in your pipeline?
+
+speaker3 00:18:41
+The pipeline is you.
+
+speaker3 00:18:42
+I don't have the pipeline.
+
+speaker2 00:18:43
+OK.
+
+speaker2 00:18:45
+Solved.
+
+speaker2 00:18:45
+All right.
+
+speaker2 00:18:47
+I'm good, I'm good.
+
+speaker3 00:18:48
+Yeah, and then of course we're gonna have to tag it, so the way I do it, I have to follow those tags rule, you know what I mean?
+
+speaker3 00:18:55
+Like, the tags and the ABAC in the app application, the app owner role, so that's why I have to put a tag, so I try to follow the rule as much as I can.
+
+speaker2 00:19:08
+Yep, tags are easy, I'm good.
+
+speaker3 00:19:12
+OK, now.
+
+speaker3 00:19:14
+Okay, go ahead.
+
+speaker1 00:19:14
+So we need to update some of these parameters because I just cloned it from multifamily.
+
+speaker1 00:19:19
+I need to make the change name of these things.
+
+speaker3 00:19:27
+Okay, so now.
+
+speaker3 00:19:30
+Yeah, Topos for the Docker config, we can, when we really doing this, I think there's a, okay, so the way I did it, because I did it locally, but the file that you have to use is in the, can you go to the registry example.
+
+speaker2 00:19:50
+I mean, you're just connecting, you're saying that Docker to be able to connect to Artifactory and maybe ECR, right?
+
+speaker2 00:19:56
+Or we should be doing the.
+
+speaker2 00:19:58
+Artifactory in ECR.
+
+speaker3 00:20:00
+Yes, that's correct.
+
+speaker2 00:20:02
+I don't need help with that.
+
+speaker3 00:20:04
+OK, no, I wanna show you like the files like really quickly.
+
+speaker3 00:20:08
+So go go down to the.
+
+speaker3 00:20:13
+Registry example.
+
+speaker3 00:20:17
+So the file that you the template of the.
+
+speaker3 00:20:23
+secret for the plain text is actually in the rotations if you call load rotation docker, for example, config, those are the file that is like, you know, that is a plain text that will be in the secret manager.
+
+speaker3 00:20:40
+So you basically set the secret manager with this thing, with the content in this file.
+
+speaker2 00:20:48
+And you're just using an NHID, right?
+
+speaker3 00:20:52
+So the idea was that, yes, So Padip has the NHID in the secret, in the one of the product count, whatever.
+
+speaker3 00:21:04
+So we're going to read that and do the rotation on this plain text.
+
+speaker3 00:21:10
+That hasn't been tested though, because it was just happened last week.
+
+speaker2 00:21:16
+What are you rotating?
+
+speaker2 00:21:19
+Right, because you should be reading it and then disconnecting the Docker and the NHID rotates separately.
+
+speaker3 00:21:26
+Yeah, so we have to sync the schedule.
+
+speaker3 00:21:30
+So we have our own.
+
+speaker2 00:21:31
+So you're managing the secret in the stack.
+
+speaker3 00:21:35
+Yes, because the secret we use.
+
+speaker3 00:21:38
+So the difference is that what Perdip has is a secret is a key value.
+
+speaker3 00:21:44
+So what we have is a plain text.
+
+speaker3 00:21:46
+So we do not like directly.
+
+speaker3 00:21:49
+do that.
+
+speaker3 00:21:50
+So our rotation actually will read the secret and then update the plain text with the secrets.
+
+speaker2 00:22:01
+Okay, but you're rotating the secret in Active Directory.
+
+speaker2 00:22:06
+What are you rotating?
+
+speaker3 00:22:09
+Those are like Padeep is doing that.
+
+speaker2 00:22:12
+So what is it you're rotating?
+
+speaker2 00:22:14
+Like you're just configured, you're reading the secret, MD5, creating the base 64 of it and logging into Docker.
+
+speaker2 00:22:36
+And Docker.
+
+speaker3 00:22:38
+Yeah, we configured code build to read the artifactory.
+
+speaker3 00:22:45
+Yeah, wait.
+
+speaker3 00:22:48
+to do NPM, you have NPM RC, right?
+
+speaker3 00:22:52
+So NPM RC is actually the credential to connect so that you can do it, you.
+
+speaker2 00:23:01
+Can do it, you can do it.
+
+speaker3 00:23:05
+I hear the echo, echo, echo.
+
+speaker1 00:23:17
+Yep.
+
+speaker1 00:23:18
+Is it good now?
+
+speaker1 00:23:19
+Is it good now?
+
+speaker3 00:23:20
+Okay, yes.
+
+speaker1 00:23:21
+Thank you for that.
+
+speaker3 00:23:23
+Crisis.
+
+speaker3 00:23:24
+Okay, go back to the MFA deployment.
+
+speaker3 00:23:31
+So the next one is also need your help, Tolbert.
+
+speaker3 00:23:37
+So scroll down.
+
+speaker2 00:23:41
+Let's see, well, let's OK, using me into cortex.
+
+speaker3 00:23:44
+OK, yeah, so these the next step part is talk about like the rotation, so skip it for now.
+
+speaker3 00:23:50
+I wouldn't do the rotation the first while we're doing this, but now this is the deployment, so on the...
+
+speaker3 00:24:01
+In agenda, right?
+
+speaker3 00:24:04
+The step 2 account bootstrap, that's once per account.
+
+speaker3 00:24:08
+Hand off the secret rotation to predict that's once per account.
+
+speaker3 00:24:12
+The put secret value.
+
+speaker3 00:24:13
+So once we run the account bootstrap, we have to make sure that the secrets are correct and, you know, like active and all those things.
+
+speaker3 00:24:23
+So that's a step 4.
+
+speaker3 00:24:25
+So step 5 is the deploy pipeline.
+
+speaker3 00:24:29
+This is once per environment.
+
+speaker3 00:24:32
+So this is the scroll down.
+
+speaker3 00:24:34
+So this is like a, the command, but the real one is like go down, go down a little bit more.
+
+speaker3 00:24:44
+To the test environment, test environment.
+
+speaker3 00:24:47
+No, go up.
+
+speaker3 00:24:50
+Keep passing.
+
+speaker3 00:24:52
+Okay, this one.
+
+speaker3 00:24:54
+So this one I have tested, this is in the MSA account.
+
+speaker3 00:24:58
+So this is everything that we need.
+
+speaker3 00:25:01
+So we need, the template name, stack name, of course, stack name, I just have to name it based on the value, you know, the text stuff.
+
+speaker2 00:25:10
+Yep.
+
+speaker3 00:25:12
+And then all the parameter that is, you know, VPC, VPC ID, private subnet, code build security group.
+
+speaker3 00:25:23
+No distribution, so this is our this is everything, so that's the second second cloud formation that we had to do per environment.
+
+speaker2 00:25:36
+Got it, yeah, you're building a pipeline.
+
+speaker3 00:25:39
+I got it, yeah, so the pipeline has two modes, right?
+
+speaker3 00:25:44
+So S3 mode and artifact 3 mode.
+
+speaker3 00:25:48
+This one I put it as a...
+
+speaker3 00:25:52
+the S3 mode.
+
+speaker3 00:25:53
+So we do have to change to the artifact 3 mode.
+
+speaker3 00:25:59
+So there's another additional script.
+
+speaker3 00:26:01
+So I'll another additional parameter.
+
+speaker3 00:26:06
+So I'll send the update.
+
+speaker3 00:26:08
+I think it's somewhere in the document.
+
+speaker2 00:26:10
+I'm sure I'll be good with that.
+
+speaker2 00:26:11
+I'm not worried about it.
+
+speaker3 00:26:13
+All right.
+
+speaker3 00:26:13
+So that's it.
+
+speaker3 00:26:15
+So that's it.
+
+speaker3 00:26:17
+That's it.
+
+speaker3 00:26:20
+and everything aligned should work.
+
+speaker3 00:26:24
+So let's talk about the release process.
+
+speaker3 00:26:27
+So if we do the S3 mode, we just have to zip the file.
+
+speaker3 00:26:34
+So scroll down to the, so this pipeline setup, this is something that I had to clean up, I haven't had time.
+
+speaker3 00:26:42
+So this is like old, right?
+
+speaker3 00:26:44
+So in the past we have like multiple.
+
+speaker3 00:26:47
+Script, so I combine them and consolidate into two scripts, so we actually have to update this and remove.
+
+speaker3 00:26:56
+everything from here because we're not doing this anymore.
+
+speaker3 00:27:00
+And then so ignore all this and scroll down to the release section.
+
+speaker3 00:27:12
+Yeah, so release.
+
+speaker1 00:27:14
+This one.
+
+speaker3 00:27:15
+Yeah, so this is now we talk about the CI, right?
+
+speaker3 00:27:23
+The CI pipeline.
+
+speaker3 00:27:26
+So in the CI pipeline, you have to clone the repository, right?
+
+speaker3 00:27:31
+And then run the sonar scan, whatever you have to run.
+
+speaker3 00:27:36
+Once done, then you zip the code, right?
+
+speaker3 00:27:38
+The zip, do the zip of the code.
+
+speaker3 00:27:41
+So that's the command.
+
+speaker3 00:27:43
+And then in this case, I just, you know, it's S3 mode.
+
+speaker3 00:27:47
+I upload to the S3 location.
+
+speaker3 00:27:49
+So that is.
+
+speaker3 00:27:54
+so, but for the artifactory, you would have to push it to the artifactory, and then in the artifactory.
+
+speaker2 00:28:02
+And then you read it down, yeah, same in HID though, right?
+
+speaker2 00:28:05
+So you're just using the same in HID for the Docker containers, for the artifacts, for the NPM, for PIP, it's all the same in HID, right?
+
+speaker3 00:28:16
+Yeah, that's my understanding as well, like...
+
+speaker3 00:28:21
+But for this one, it's a CI process.
+
+speaker3 00:28:24
+This is what, and you said that Kai is going to help.
+
+speaker2 00:28:28
+It's going to be the MDTCV2 pipeline, I would imagine.
+
+speaker1 00:28:32
+Yeah, we have that pipeline.
+
+speaker1 00:28:33
+It's just that we need to build this code into the structure that is needed to be in the zip file.
+
+speaker1 00:28:40
+So we just need to know what kind of structure this zip file needs to have.
+
+speaker3 00:28:45
+Yeah, I actually will send you.
+
+speaker3 00:28:46
+I'm not sure if it's in this one, but I'll after this I'll send you because it has to be in the format, like, you know, the version, the version and then the sig file and then dash the version ID.
+
+speaker3 00:28:59
+So the difference between the S3 and the Artifactory is that Artifactory mode, you would be able to pick like which version you want to, you know, deploy.
+
+speaker3 00:29:10
+It's prequel actually.
+
+speaker3 00:29:12
+For the S3, you have to go by the
+
+speaker3 00:29:15
+the versioning of the S3, which is, it's work too, but you have to know.
+
+speaker1 00:29:20
+But inside the structure, how about the structure inside the zip?
+
+speaker3 00:29:28
+Inside the zip, so that's a command, the Python command.
+
+speaker3 00:29:32
+So we get rid of.
+
+speaker1 00:29:33
+The, I mean, we just need to pack the whole folder, the root folder into the zip.
+
+speaker1 00:29:37
+Or do we need to follow any structure kind of a thing just to make sure, you know, what kind of folder, the root folders it need to have.
+
+speaker3 00:29:45
+So if you inside the root folder, and then you have you execute that Python.
+
+speaker2 00:29:51
+I mean, she has it on step one on the screen, right?
+
+speaker2 00:29:54
+OK, yeah, like it's step one, zip everything, exclude this, you know, exclude Python, yeah, this one, I see, got it, yeah, that's the zip command.
+
+speaker1 00:30:07
+Yeah, got it, thank you.
+
+speaker3 00:30:10
+Yeah, exactly.
+
+speaker3 00:30:11
+So, okay.
+
+speaker3 00:30:12
+So if you have done all this, then you have the pipeline.
+
+speaker3 00:30:16
+Now I want to talk about the step 6, which is the environment configuration.
+
+speaker3 00:30:21
+This will be your configuration per environment, which is basically is the cloud formation parameter of the application itself.
+
+speaker3 00:30:33
+So.
+
+speaker3 00:30:34
+Go to the environment and then, let's take a look at actually take a look at test.yaml.
+
+speaker3 00:30:41
+That's the latest one.
+
+speaker3 00:30:44
+OK, so this is the audit configuration.
+
+speaker3 00:30:47
+So you're gonna have the stack name, the role ARN, which is this role ARN is also created by the account bootstrap.
+
+speaker3 00:30:58
+So you're gonna need that.
+
+speaker2 00:31:01
+If we haven't run any more than once in an account.
+
+speaker2 00:31:04
+We have to worry about a conflict there.
+
+speaker3 00:31:08
+You mean like for the account boot?
+
+speaker2 00:31:11
+Imagine I have two different copies of it for two different usage patterns.
+
+speaker2 00:31:17
+Because I'm just guessing that that's going to happen.
+
+speaker2 00:31:22
+You know what?
+
+speaker2 00:31:23
+Not important.
+
+speaker2 00:31:23
+We can always just copy the role and duplicate it.
+
+speaker2 00:31:25
+Not a big deal.
+
+speaker3 00:31:27
+It's supposed to be account bootstrack supposed to be one per account.
+
+speaker3 00:31:32
+So
+
+speaker3 00:31:33
+If we happen to have different role, then it's going to be different stacks.
+
+speaker2 00:31:38
+Yeah, okay, I'm good.
+
+speaker3 00:31:41
+Okay.
+
+speaker3 00:31:41
+And then we have to have the tags so that the application has the tags so that the app owner role can, you know, that rule, that kind of...
+
+speaker2 00:31:52
+You're doing to make back.
+
+speaker3 00:31:55
+Yes.
+
+speaker2 00:31:56
+Okay.
+
+speaker3 00:32:00
+Gonna work, but anyway, where is app owner role?
+
+speaker1 00:32:03
+Sorry, where is app owner role is mentioned?
+
+speaker1 00:32:10
+Sorry, no, the app owner role you mentioned something.
+
+speaker3 00:32:14
+I didn't, yeah, when you have, I don't know how this gonna work, Anil.
+
+speaker2 00:32:19
+So, they're gonna have the app support role.
+
+speaker2 00:32:24
+I will also insert a app support role.
+
+speaker2 00:32:26
+OK, let's not let's not get confused by the facts here.
+
+speaker1 00:32:30
+OK.
+
+speaker3 00:32:31
+Yeah, so we have to match, you know, the app owner role and of text or the app owner role has to match text over here.
+
+speaker2 00:32:38
+I, got it.
+
+speaker2 00:32:39
+You worked with Corey.
+
+speaker2 00:32:40
+She created an app owner role.
+
+speaker2 00:32:42
+Got it.
+
+speaker2 00:32:42
+I'm good.
+
+speaker3 00:32:44
+Yeah, OK, so then in parameters.
+
+speaker3 00:32:49
+Everything else is, everything else are, like the job ID, the job API, this is for the API that, the downstream can connect to and use ping.
+
+speaker3 00:33:03
+This is the configuration.
+
+speaker3 00:33:04
+You don't need to change that.
+
+speaker3 00:33:06
+What you have to change?
+
+speaker2 00:33:08
+I am worried about using ping dev because you're using ping dev not.
+
+speaker2 00:33:13
+secure UAT.
+
+speaker2 00:33:15
+So that is their sandbox.
+
+speaker2 00:33:16
+Is there a sandbox code that ping needs to promote?
+
+speaker3 00:33:20
+Oh, that's another thing.
+
+speaker3 00:33:23
+Now you remind me.
+
+speaker2 00:33:24
+Because we should never actually be pointing to that.
+
+speaker2 00:33:27
+That's where they develop their ping configurations.
+
+speaker3 00:33:32
+Yeah, I don't know.
+
+speaker3 00:33:34
+This is what they give me.
+
+speaker3 00:33:36
+So I would say like the non-prod, we will use the auth.
+
+speaker3 00:33:43
+Dev, and then for the prod will be different ping, I'd say.
+
+speaker2 00:33:47
+So, that's not the non-prod ping, though.
+
+speaker1 00:33:51
+That's the this is the non-prod only, right?
+
+speaker1 00:33:55
+It's for the dev, actually.
+
+speaker2 00:33:56
+No, trust me, I know ping.
+
+speaker2 00:33:59
+Secure UAT is the one that is supposed to be used in non-prod.
+
+speaker2 00:34:03
+That is literally the one that they break all the time, yeah, because that's where they.
+
+speaker1 00:34:07
+Yeah, sorry, go ahead.
+
+speaker2 00:34:11
+That's the one where they test.
+
+speaker2 00:34:13
+We probably need to circle back with Shashank.
+
+speaker2 00:34:18
+I mean, I can try to do it.
+
+speaker2 00:34:19
+I don't know who owns what we're doing with Ping, but I do have a concern if we're pointing to not the one that we use in non-prod, but the one that they use to test software updates on and test configurations.
+
+speaker1 00:34:35
+So usually, Topaz, we also use this one for our dev environment.
+
+speaker1 00:34:40
+UAT environment will have the secure UAT.
+
+speaker1 00:34:43
+Or non-prod devs will use this one, and then non-prods, okay, will use.
+
+speaker2 00:34:48
+Yeah, whatever ping you guys want to use, I don't care, but if you need to get something promoted, so I think the goal is to get it out there, right?
+
+speaker2 00:35:00
+Yeah, so if you need to have something promoted on the ping side, someone needs to figure that out.
+
+speaker3 00:35:05
+Yeah.
+
+speaker3 00:35:06
+Someone needs to figure that out.
+
+speaker3 00:35:08
+Yeah.
+
+speaker2 00:35:08
+I will be happy to join a call with ping if I could be helpful.
+
+speaker2 00:35:14
+If not, that's fine too.
+
+speaker2 00:35:16
+Like, but just know that that's a scary ping to use.
+
+speaker1 00:35:22
+Yeah.
+
+speaker3 00:35:26
+Okay.
+
+speaker3 00:35:26
+So that's mean, so I forgot one action item.
+
+speaker3 00:35:29
+So once this deploy, right, we have to also, well, you have to open the ticket with the ping team so that they create.
+
+speaker3 00:35:37
+Bad things in ping, so that we can use it right, so that's one another step you have to do.
+
+speaker3 00:35:45
+I have the configuration, I have the I have the template, I'll send it to you as well.
+
+speaker3 00:35:50
+There's a bunch of them.
+
+speaker3 00:35:51
+OK, let me.
+
+speaker1 00:35:53
+So we.
+
+speaker1 00:35:54
+We need to create all these roles using.
+
+speaker3 00:35:57
+Yeah, so that's the next step, so you have to have that entitlement, okay, so there's two entitlement actually, this is like, yeah, so for multifamily, they have two entitlement for one is admin role and one is a viewer role, okay, so you then we have to put two entitlement in here.
+
+speaker3 00:36:22
+So I will send you the ping request template, like what you want to ask them for.
+
+speaker3 00:36:28
+And also you have to create the tool entitlement for your team.
+
+speaker1 00:36:33
+Okay.
+
+speaker3 00:36:35
+But if you want to use like 4 roles, which is allowed in the application, you know, reviewer, you know, that kind of thing, 4 roles, then you have 4 entitlement.
+
+speaker3 00:36:45
+Otherwise you have multifamily, they only pick two.
+
+speaker1 00:36:49
+Okay, so, one is admin and one is the non-admin one.
+
+speaker3 00:36:54
+Yes, okay, one is the viewer, like, you can't do configuration, you just only see the document.
+
+speaker1 00:37:02
+Okay, yeah, so admin one is for the configuration.
+
+speaker3 00:37:07
+Yeah, admin role and the viewer role, yes, yeah, okay.
+
+speaker1 00:37:16
+This is for the jot API jot token, right?
+
+speaker2 00:37:20
+Yeah.
+
+speaker3 00:37:24
+All right, so those are your action item, and which I'll send you a PIN template.
+
+speaker3 00:37:33
+And then the VPC ID, those are, this is, so the VPC, I think they're gonna create, they already has VPC.
+
+speaker2 00:37:47
+I'm doing VPC, I'll own all the VPC stuff.
+
+speaker3 00:37:50
+OK, and the subnet, the private subnet has to be routable, private routable subnet.
+
+speaker3 00:37:57
+This is all in the routable subnet.
+
+speaker2 00:37:59
+Yeah, because you have to talk to Ping.
+
+speaker2 00:38:01
+Got it.
+
+speaker3 00:38:02
+Yeah.
+
+speaker3 00:38:02
+OK.
+
+speaker3 00:38:04
+Lambda subnet ID.
+
+speaker3 00:38:06
+So this is actually, I think it will be, this file should be owned by single family team, I think.
+
+speaker3 00:38:16
+But you don't have this information, you have probably have to ask this information, the VPC ID from Tobus, but.
+
+speaker2 00:38:23
+Yeah, that that's will go into the MD.
+
+speaker2 00:38:25
+All this turns into the manifest file for anyone that's uses the V2 pipeline.
+
+speaker3 00:38:31
+Not this file.
+
+speaker3 00:38:31
+This file has to be this, so this one is the file that is in the repo, right?
+
+speaker3 00:38:38
+That I understand, yeah, so.
+
+speaker3 00:38:42
+when do the deploy is actually going to follow this one.
+
+speaker3 00:38:47
+Okay, all right.
+
+speaker3 00:38:49
+For the S3 VPC endpoint, yeah, we need those things.
+
+speaker2 00:38:54
+Why are you using a overridden S3 VPC endpoint?
+
+speaker2 00:39:02
+Why won't we just use the generic one that Jerry provides?
+
+speaker2 00:39:05
+Is there something special going on here?
+
+speaker3 00:39:09
+No, I it's just a VPC endpoint.
+
+speaker3 00:39:11
+It's just a name.
+
+speaker3 00:39:12
+Don't worry about it.
+
+speaker3 00:39:12
+It's just use the VPC endpoint.
+
+speaker2 00:39:15
+Just use the S3 VPC endpoint.
+
+speaker2 00:39:17
+So it's just a normal one.
+
+speaker3 00:39:19
+Yeah, it's just a name.
+
+speaker2 00:39:21
+Well, you have DNS override, which tells you that you're not using S3 dot us-east-1.amazon.aws.com, but you're actually using
+
+speaker2 00:39:34
+an explicit endpoint that's not the DNS default and I'm curious why that would be the case, but not a big deal.
+
+speaker3 00:39:48
+Okay, good, Yeah, all right, that's all about the name.
+
+speaker3 00:39:52
+But anyway, so okay, so API web hosting, yeah, we're gonna use API gateway web hosting.
+
+speaker3 00:40:00
+It's all private.
+
+speaker3 00:40:02
+It's in that's a API gateway endpoint ID.
+
+speaker3 00:40:08
+We need that.
+
+speaker3 00:40:10
+The space name is beta.
+
+speaker3 00:40:13
+So those are those parameters that we need.
+
+speaker3 00:40:16
+Okay, so next one is the ping configuration.
+
+speaker3 00:40:23
+Okay, so here this is like kind of like you know how you map the.
+
+speaker3 00:40:30
+the entitlement with the application roles.
+
+speaker3 00:40:34
+So you have to provide, actually the metadata here is just the placeholder, you're not using it.
+
+speaker3 00:40:43
+The group parameter, that's the group attribute you use, you need that one.
+
+speaker3 00:40:49
+And then the group name, the viewer name, this is how you map it.
+
+speaker2 00:40:55
+So, the everything is going through the prod SaaS ping is what I'm seeing here, or is that not true when we're doing dev ping?
+
+speaker3 00:41:03
+Yeah, so got it, yeah, it's a dev ping, so this is just a placeholder when deployed the first time, then once you have, because you don't have the ping the metadata endpoint, right?
+
+speaker3 00:41:16
+You're not the ping team does not exposing it, so after we deployed the doc the application, we got ping set up and they gave us.
+
+speaker3 00:41:25
+they give us the SAML file, the metadata file, we have to then upload into the Cognito.
+
+speaker3 00:41:33
+That's a...
+
+speaker2 00:41:34
+So we're doing SAML or are we doing JWT?
+
+speaker3 00:41:39
+Are we doing OAuth or SAML?
+
+speaker3 00:41:41
+SAML, yeah.
+
+speaker2 00:41:42
+SAML.
+
+speaker2 00:41:43
+Good to know.
+
+speaker2 00:41:44
+No JWT, SAML.
+
+speaker3 00:41:51
+Yeah, I think this is SAML.
+
+speaker2 00:41:52
+But the JWT doesn't have metadata.
+
+speaker3 00:41:55
+Yeah, it's a metadata.
+
+speaker1 00:41:57
+So SAML is the app front end and Jot is for yeah app.
+
+speaker3 00:42:03
+It is the front end only, this is the front end only, so you don't have to worry about.
+
+speaker1 00:42:08
+It, but we need to have a API endpoint as well, that's yes, that's something we want to bring it up.
+
+speaker2 00:42:16
+As well, that's how that's how the authentication happens.
+
+speaker2 00:42:21
+on the AWS core network outside of our network, but then the LAMB is behind the API gateway that are running as Docker containers are processing inside of our BPC, and therefore they are going to care about it.
+
+speaker2 00:42:36
+And to access our API gateway, you have to access it from the BPC.
+
+speaker2 00:42:42
+So this all makes sense to me.
+
+speaker3 00:42:44
+OK, yeah.
+
+speaker3 00:42:47
+This configuration that you're seeing here is for just for the UI, so it's you that one use SAML, but when you automate or programmatically connect to the, you know, to the application, you're gonna use you remember the ping configuration from the top, yeah, the jobs API, that is completely JWT, so that one you use JWT.
+
+speaker1 00:43:10
+Okay, so okay, so yeah.
+
+speaker2 00:43:14
+So that's both right for different, for different operations?
+
+speaker3 00:43:18
+OK, yeah, exactly.
+
+speaker3 00:43:20
+So now go down.
+
+speaker3 00:43:26
+So yeah, that's a mapping of the file.
+
+speaker3 00:43:28
+So you see like the admin group, that's your entitlement.
+
+speaker3 00:43:33
+So if you have like, you know, viewer group, then you will put your entitlement there.
+
+speaker3 00:43:39
+You see it like.
+
+speaker1 00:43:40
+Yeah, okay, this one, we can, so this needs to be a different entitlement or is the same thing that we have set up for the JWT?
+
+speaker3 00:43:51
+Same, same, yeah, same, okay, yeah, but this is like a mapping, right?
+
+speaker3 00:43:56
+So you kind of map the entitlement to the group in the application, so you have to put it in here too, okay?
+
+speaker3 00:44:04
+So for multifamily, they don't use auto, they didn't use reviewer.
+
+speaker3 00:44:09
+I forgot to put the viewer.
+
+speaker3 00:44:10
+So they actually using viewer.
+
+speaker3 00:44:13
+But anyway, so they're doing it in their desk.
+
+speaker3 00:44:17
+This is like, this is my environment where I test everything.
+
+speaker3 00:44:20
+But anyway, okay, all right.
+
+speaker3 00:44:22
+So the next one is completion hook.
+
+speaker3 00:44:27
+You know when the document complete, you have an option to like trigger something.
+
+speaker3 00:44:33
+Right, so this is where we said true right now it's trigger a lambda function that is writing like writing a log at this moment, right?
+
+speaker3 00:44:46
+So they decided to do that, but in the future you can actually actually.
+
+speaker3 00:44:53
+First, we were planning to write a completion hook so that it's dropped a message into the MQ, but we couldn't get the MQ to work.
+
+speaker3 00:45:03
+It's too hard, so we decided not to do the hook and do the poll instead.
+
+speaker3 00:45:09
+I think we could have another session to talk about, like how we can connect to, how can we talk to this application programmatically?
+
+speaker2 00:45:17
+I think I would recommend just have it go to an SNS, and then from there you can have an SQS, keep it simple.
+
+speaker2 00:45:25
+or have something that takes the SNS notifications and puts it there, or have five different things all listening to SNS, like it doesn't matter.
+
+speaker2 00:45:33
+But anyhow.
+
+speaker3 00:45:34
+Yeah, anyhow.
+
+speaker3 00:45:36
+Anyhow, this one just said true and it will be fine.
+
+speaker3 00:45:39
+Okay, the next step is the features.
+
+speaker3 00:45:43
+So this is like the IDP actually has a bunch of features, but.
+
+speaker3 00:45:49
+I want to be like, not to be in trouble.
+
+speaker3 00:45:52
+Like the document knowledge base I disable because I don't want you to pay for the knowledge base.
+
+speaker3 00:45:59
+The MCP, I disable it right now because I don't want to, have to ask for.
+
+speaker3 00:46:07
+Security, more security, right?
+
+speaker3 00:46:08
+So, we disable that, but in the future, if you have agents, you can actually have this as an MCP.
+
+speaker3 00:46:14
+We can talk about this.
+
+speaker3 00:46:16
+is so much potential.
+
+speaker2 00:46:19
+Anyway, yeah, we should be doing MCPs.
+
+speaker2 00:46:21
+We're not allowed to do MCPs.
+
+speaker2 00:46:23
+Move it.
+
+speaker2 00:46:24
+Yeah, I put you.
+
+speaker3 00:46:26
+Yeah, but the feature is there.
+
+speaker3 00:46:29
+It's there whenever you're ready.
+
+speaker3 00:46:32
+Okay, so just follow this one.
+
+speaker3 00:46:34
+So this is not like, it's just configuration not affecting anything.
+
+speaker3 00:46:41
+But anyway, so on the next one, the circuit breaker, so I enable this one.
+
+speaker3 00:46:48
+This is, our application is all serverless, right?
+
+speaker3 00:46:52
+And then it's.
+
+speaker3 00:46:54
+managed by AWS, the scale, the scalability, high availability, all this stuff.
+
+speaker3 00:47:03
+The only thing that is, it's kind of like a risk here is when bedrock is, like dead, right?
+
+speaker3 00:47:12
+So we enable the circuit breaker so that if there's like, the bedrock is failing, it's not, and then you process a bunch of documents, then
+
+speaker3 00:47:23
+then it's going to keep failing, right?
+
+speaker3 00:47:24
+And you're going to keep hitting the API.
+
+speaker3 00:47:27
+So we enable the circuit breaker.
+
+speaker3 00:47:30
+So when that happens, it's going to slow down or it's disable the configuration so that it doesn't like hammer everything.
+
+speaker3 00:47:39
+And then once it's back on, it will automatically turn it on and do its thing.
+
+speaker3 00:47:45
+So this is like resiliency feature that it has.
+
+speaker3 00:47:53
+So just follow this one.
+
+speaker1 00:47:54
+Okay.
+
+speaker3 00:47:57
+All right.
+
+speaker2 00:47:58
+This one's got me.
+
+speaker2 00:47:59
+So we're running in SFC002 from MFD002.
+
+speaker2 00:48:09
+Why aren't we using the same account?
+
+speaker3 00:48:18
+What, the gateway URL?
+
+speaker2 00:48:22
+You're deploying everything in MFD 0002, but you're running Bedrock in SFZ 002.
+
+speaker2 00:48:30
+Or is that just the...
+
+speaker3 00:48:31
+Yeah, this is your platform gateway.
+
+speaker2 00:48:36
+What account is the gateway in?
+
+speaker3 00:48:40
+I have no idea.
+
+speaker3 00:48:41
+This is Kai.
+
+speaker3 00:48:42
+Kai works.
+
+speaker3 00:48:43
+So he, this is, you know, like the application.
+
+speaker3 00:48:48
+out-of-the-box, it will call the bedrock in the account.
+
+speaker3 00:48:51
+But we routed all the bedrock calls to the platform gateway that you guys built instead of thread AI.
+
+speaker3 00:49:00
+This is the configuration.
+
+speaker2 00:49:03
+Okay.
+
+speaker2 00:49:03
+Yeah.
+
+speaker3 00:49:05
+So this is the configuration.
+
+speaker3 00:49:07
+This is where, this is we need Kai on this.
+
+speaker3 00:49:10
+He has to create a tenant ID for you guys.
+
+speaker3 00:49:15
+And then that's the URL.
+
+speaker3 00:49:16
+So this is the configuration we have to ask kind of.
+
+speaker3 00:49:24
+Okay.
+
+speaker3 00:49:25
+Everything next is all the, secret.
+
+speaker3 00:49:32
+We create a secret in the beginning, right?
+
+speaker3 00:49:36
+This is the secret ID that we need.
+
+speaker3 00:49:40
+I mean, in the future, we would read it from in the account, but not at this point.
+
+speaker3 00:49:45
+Let's just let's just.
+
+speaker2 00:49:46
+Why do you have a bunch of secrets, not one secret?
+
+speaker3 00:49:51
+Is this is so we need we need NPMRC credential to connect to NPM, right?
+
+speaker2 00:49:59
+That's why not just use the same credentials, the same in HID.
+
+speaker3 00:50:05
+It does, but the what we have is not the secret.
+
+speaker3 00:50:11
+We use the plain text.
+
+speaker2 00:50:13
+I get that.
+
+speaker2 00:50:14
+OK, I'm good.
+
+speaker2 00:50:17
+I'll figure it out.
+
+speaker3 00:50:18
+Yeah, we can, you know, like we can talk about the design choice.
+
+speaker3 00:50:25
+This is the design choice that we made.
+
+speaker2 00:50:28
+Yeah, I get it.
+
+speaker2 00:50:29
+I guess this is just what was done.
+
+speaker2 00:50:30
+It's fine.
+
+speaker3 00:50:31
+Yeah.
+
+speaker3 00:50:33
+Permission battery, of course.
+
+speaker3 00:50:35
+And then the next step, the next step, you're going to need your permission battery.
+
+speaker3 00:50:44
+And then the console title, this is how you want to name the application.
+
+speaker3 00:50:50
+You know, people like to want to name their application different ways.
+
+speaker3 00:50:55
+So I have the, you know, you can name whatever.
+
+speaker1 00:50:59
+OK.
+
+speaker2 00:51:00
+Happy unicorn.
+
+speaker3 00:51:01
+So I.
+
+speaker3 00:51:04
+That would work.
+
+speaker3 00:51:06
+No, don't change this one.
+
+speaker3 00:51:08
+You have to copy.
+
+speaker3 00:51:09
+You have to copy this one.
+
+speaker3 00:51:11
+And then, so I'll come back to this a little bit.
+
+speaker3 00:51:15
+So you have to copy this one, use and change the name, right?
+
+speaker3 00:51:19
+So change the name of the file.
+
+speaker3 00:51:21
+Like right now it's test.yaml.
+
+speaker3 00:51:23
+Oh, okay, so rename.
+
+speaker3 00:51:26
+Yeah, your own file, and then we're gonna set it on the top, so we go back to the pipeline later.
+
+speaker3 00:51:33
+OK, so now the source code URL is, you know, your Bitbucket.
+
+speaker3 00:51:40
+The README is your Bitbucket reporting issue.
+
+speaker3 00:51:43
+I just put, you know, Jira, but I don't know where it is.
+
+speaker3 00:51:46
+This is like OK, and that's it, actually.
+
+speaker2 00:51:55
+Are we using AWS WAF?
+
+speaker3 00:52:00
+Pardon me.
+
+speaker2 00:52:01
+The web line 113, the web application firewall, a WAF.
+
+speaker2 00:52:06
+Are we actually using a WAF and we're allowing ingress over the public internet through the WAF?
+
+speaker3 00:52:13
+No, I no, that's what the configuration, that's what's cloud formation, cloud front configuration is not.
+
+speaker3 00:52:21
+I don't think, I think that actually need to double check it.
+
+speaker3 00:52:24
+I don't know if we did it in the web, in the API gateway.
+
+speaker3 00:52:30
+I don't think so, but so this is like...
+
+speaker2 00:52:33
+That might not be used.
+
+speaker2 00:52:35
+Okay, because that's something that could blow up in my face.
+
+speaker3 00:52:39
+Yeah, we can just remove it so nobody see it.
+
+speaker3 00:52:44
+That it doesn't, yeah, I'm good.
+
+speaker3 00:52:48
+The log level is info and then log retention is something you can...
+
+speaker2 00:52:56
+And to be honest, I'm going to have Rob start with the log level debug because, you know, I don't expect everything to be smooth the first pass.
+
+speaker3 00:53:05
+Okay, yeah, no problems.
+
+speaker1 00:53:12
+So the logs can be accessed through Kibana topos or we're going to have...
+
+speaker2 00:53:16
+No, it'll be cloud watch logs.
+
+speaker1 00:53:18
+Okay, so in case if you.
+
+speaker2 00:53:21
+Only very little goes to Kibana, right?
+
+speaker2 00:53:24
+We do about 200 terabytes of logs A day.
+
+speaker2 00:53:28
+Kibana ingest 4 terabytes A day.
+
+speaker1 00:53:32
+Got it.
+
+speaker1 00:53:32
+Okay.
+
+speaker1 00:53:33
+So just in case if you want to look at log something to see what's happening in the Kibana, like, you know, what do you suggest?
+
+speaker2 00:53:43
+You can't use Kibana.
+
+speaker2 00:53:44
+You have to use CloudWatch.
+
+speaker2 00:53:46
+There's the dashboard.
+
+speaker1 00:53:47
+Okay.
+
+speaker2 00:53:47
+Michael's writing a dashboard for, I know.
+
+speaker3 00:53:49
+Yeah.
+
+speaker1 00:53:50
+Okay.
+
+speaker2 00:53:53
+But most things, the Elk stack is useless.
+
+speaker2 00:54:02
+Cool.
+
+speaker3 00:54:03
+Okay, so you remember, so the file name is actually...
+
+speaker3 00:54:11
+You have to copy this file, make your own copy, use different name, right?
+
+speaker1 00:54:16
+Okay.
+
+speaker3 00:54:17
+So that's the point.
+
+speaker3 00:54:18
+So now let's go back to the MSA deployment.md.
+
+speaker1 00:54:22
+Okay.
+
+speaker1 00:54:23
+You said something about the pipeline, Siri is about this one.
+
+speaker1 00:54:31
+Do we need, when we copy to, let's say, dev.ml, do you mean like we can change it there or something else that you're mentioning here?
+
+speaker3 00:54:40
+Yeah, so that's what I'm going to show you now.
+
+speaker3 00:54:43
+So it's not like that line per se.
+
+speaker3 00:54:46
+I'm just saying like, so what you have to do, make a copy of this file and make the changes to make your own and use different name.
+
+speaker3 00:54:54
+OK, And now go back to the MSA deployment.md.
+
+speaker1 00:54:59
+OK.
+
+speaker3 00:55:01
+Go to the pipeline, pipeline, pipeline.
+
+speaker3 00:55:05
+Yes, scroll down.
+
+speaker1 00:55:09
+Deploy pipeline.
+
+speaker3 00:55:11
+Yeah, it will go go to the test test one.
+
+speaker3 00:55:16
+Okay.
+
+speaker3 00:55:19
+Yeah, see the pipeline configuration key.
+
+speaker3 00:55:23
+So this is what you have to change.
+
+speaker3 00:55:25
+You see the pipeline configuration key.
+
+speaker1 00:55:29
+Pipeline configuration key.
+
+speaker1 00:55:32
+Which one?
+
+speaker2 00:55:33
+Enterprise.
+
+speaker2 00:55:34
+Down, down, down, up, up, up, up.
+
+speaker2 00:55:39
+There you go.
+
+speaker3 00:55:40
+Yeah.
+
+speaker3 00:55:41
+So this you have to change.
+
+speaker1 00:55:44
+Okay.
+
+speaker2 00:55:44
+Again, this isn't going to be manual stuff, right?
+
+speaker2 00:55:47
+We have to get this into the modern delivery pipeline, and it'll be doing the deployments.
+
+speaker3 00:55:52
+Yeah.
+
+speaker2 00:55:52
+So let's not get too distracted by the facts here.
+
+speaker1 00:55:55
+Yeah.
+
+speaker2 00:55:55
+Right.
+
+speaker1 00:55:56
+This needs to be Rob Fernie.
+
+speaker3 00:55:58
+You have to put the right name, right?
+
+speaker3 00:56:00
+Otherwise, you guys have to talk.
+
+speaker3 00:56:01
+Yeah.
+
+speaker2 00:56:02
+That's Rob Fernie is going to be the one responsible for cleaning all this up.
+
+speaker3 00:56:09
+So, if everything's good, then we could.
+
+speaker3 00:56:17
+That's a little thing that is specific, like you see the RX7742, that's our, you know, the app ID of the MFA, so that you have to change.
+
+speaker1 00:56:33
+The app ID.
+
+speaker2 00:56:35
+The app ID in this context isn't necessarily a TPI app ID because you can only use one because it's connected to the ping.
+
+speaker2 00:56:47
+Okay, Right, so you know how in TPI you can have a primary app ID and subway app IDs underneath it?
+
+speaker2 00:56:54
+Yeah, right, so every deployment.
+
+speaker2 00:56:59
+Today, with how it's set up, and I'm not saying anything is written in the stack, will that be a separate TPI app ID to prevent conflict?
+
+speaker2 00:57:06
+Yeah, right, and that's how you provide the isolation.
+
+speaker1 00:57:08
+Yeah, we have created that yesterday in Topas, so we have it ready.
+
+speaker2 00:57:13
+Good.
+
+speaker1 00:57:14
+Yeah, I can share that.
+
+speaker2 00:57:16
+I mean, honestly, I don't even know who.
+
+speaker2 00:57:21
+I'm not sure if you work for multi-family or if you work for MDTC or what's going on.
+
+speaker1 00:57:25
+So I work for the single family.
+
+speaker1 00:57:29
+I'm part of the development team that we are trying to, as part of the Gen.
+
+speaker1 00:57:33
+AI team and the single family acquisitions, we are trying to deploy this for the whole SFA.
+
+speaker1 00:57:38
+So this is the engineering team for the Gen.
+
+speaker1 00:57:41
+AI that's trying to own this?
+
+speaker2 00:57:48
+So are you going to try to deploy this with Platinum Express since I just heard Mike Ryan's name?
+
+speaker2 00:57:54
+Are we trying to deploy this with MDTC v2?
+
+speaker1 00:57:57
+I believe, I think that the shade lip is only possible with MDTC.
+
+speaker1 00:58:03
+Platinum doesn't have it as I remember, so it's mostly MDTC.
+
+speaker2 00:58:08
+Okay, I'm just making sure that I have the right, got it, makes sense, makes sense, yeah, you're like, I'm under Mike Ryan and he's all about, you know, Platinum Express, so whatever.
+
+speaker1 00:58:18
+Anil told, Anil told, I think it's not available, I mean, I know I think is not available in PDM and some reason Anil also told the same thing, yeah.
+
+speaker2 00:58:28
+I mean, whatever, yeah, once more work, yeah, I'll get you working on MDTCV2, that's fine, got it, yeah.
+
+speaker2 00:58:38
+What I propose though is that we freeze this repo and create a clone fork it.
+
+speaker2 00:58:45
+That way we can have a new repo where we put all of our changes and as things evolve, we've maintained the old one for posterity.
+
+speaker2 00:58:53
+Is that something that we can agree on?
+
+speaker2 00:58:56
+Oh, where is this repo at?
+
+speaker2 00:58:57
+Can someone send me this repo?
+
+speaker1 00:58:59
+Yeah, I can send you.
+
+speaker1 00:59:00
+I think you need access to this repo.
+
+speaker2 00:59:04
+Yeah, my whole team's going to need access to this repo.
+
+speaker1 00:59:07
+Yeah, okay.
+
+speaker1 00:59:08
+I can raise a request for you to get this access to this repo.
+
+speaker2 00:59:14
+Here, let me give you a list of people.
+
+speaker1 00:59:16
+Yeah, sure.
+
+speaker1 00:59:19
+Or is it possible, Topaz, to have a separate repo for us in the source repo?
+
+speaker1 00:59:29
+I don't know.
+
+speaker2 00:59:32
+I mean, I would put it in a common space, but...
+
+speaker2 00:59:35
+I don't think we should have three different repos, but three that are changing all the time, right?
+
+speaker2 00:59:39
+We should have one single source of truth.
+
+speaker3 00:59:42
+Yeah, one single source of truth that we have, you and I have to work on top of is the one that Anu shared the other day.
+
+speaker3 00:59:50
+It's the golden copy.
+
+speaker2 00:59:54
+Well, I have to make sure everything works, right?
+
+speaker2 00:59:59
+Yeah, right.
+
+speaker2 01:00:00
+So I...
+
+speaker2 01:00:02
+Sure, we can have the golden copy where some things are at, but I also am on the hook for getting them through the MDTCV2 process.
+
+speaker1 01:00:11
+OK, yeah, right.
+
+speaker2 01:00:13
+So, we, yeah, it's complicated.
+
+speaker1 01:00:15
+Yeah, OK, we'll let it's complicated, right?
+
+speaker1 01:00:18
+Yeah, we'll raise a request for you, Topaz, and the team that you mentioned.
+
+speaker1 01:00:23
+We will send me the names I can raise a request for you.
+
+speaker2 01:00:27
+Yeah, I'm just looking up Vishwa's last name, 'cause I don't know off the top of my hand.
+
+speaker4 01:00:33
+I have a quick question, Siri.
+
+speaker4 01:00:36
+So we are a bit confused.
+
+speaker4 01:00:38
+So this repo is a shared library.
+
+speaker4 01:00:40
+It's not like a microservice repo.
+
+speaker4 01:00:43
+So is it what expected?
+
+speaker4 01:00:46
+We just copied the code from accelerator to this repo.
+
+speaker4 01:00:53
+So is it like, okay, because it's not like a regular microservice repo, it's like a shared lib.
+
+speaker4 01:01:00
+where we push the code to our MDDC artifactory repo.
+
+speaker2 01:01:04
+All right, I'll put it in that chat too.
+
+speaker1 01:01:07
+Yeah, sure.
+
+speaker2 01:01:09
+Because I put it in the other chat just now.
+
+speaker1 01:01:11
+That's fine.
+
+speaker1 01:01:12
+I think anything is okay.
+
+speaker1 01:01:13
+I can take it from there.
+
+speaker2 01:01:15
+Yeah, it doesn't matter.
+
+speaker2 01:01:17
+We can put it in all the chats.
+
+speaker2 01:01:20
+In the list of concerns I have, copying and pasting is not a hard list for me.
+
+speaker1 01:01:31
+So you can raise it and I can approve it.
+
+speaker3 01:01:36
+So you guys going to do the CIPs, right?
+
+speaker1 01:01:39
+Yeah, we will try to build the zip file out of it until we have things ready for the what you mentioned in the MFA file.
+
+speaker3 01:01:53
+I have to send you the file format, the format.
+
+speaker1 01:01:59
+Yeah, the file name file name format, right?
+
+speaker1 01:02:01
+Yeah, I think we will be able to do that probably today.
+
+speaker1 01:02:06
+We can, we already have a code to build the zips and wheels sort of the shared lib, so we just need to kind of follow the some naming and then use that command kind of a thing, so we can we can do that, but we can something.
+
+speaker3 01:02:20
+Cool, that'd be cool, yeah.
+
+speaker3 01:02:25
+I forgot that there was one more parameter.
+
+speaker3 01:02:27
+I don't see that, so I need to look that myself.
+
+speaker3 01:02:31
+But anyway, that's if everything works, it will work.
+
+speaker1 01:02:37
+Thank you.
+
+speaker1 01:02:37
+So Topaz, like what is the next steps you think, you know, for we're going to get the, you know, zip file published to Artifact Tree probably today sometime.
+
+speaker1 01:02:50
+But setting up the, infra and updating the dev.yaml, right?
+
+speaker2 01:02:58
+So...
+
+speaker2 01:03:00
+I haven't touched any of this.
+
+speaker2 01:03:03
+My team hasn't touched any of this.
+
+speaker1 01:03:04
+Got it.
+
+speaker2 01:03:06
+There's a lot of manual steps.
+
+speaker2 01:03:08
+All these manual steps need to become non-manual steps, right?
+
+speaker2 01:03:13
+So my thinking is we pick another account.
+
+speaker2 01:03:16
+I own SFC004.
+
+speaker2 01:03:19
+And there's nothing going on and there's no business workloads, no nothing.
+
+speaker2 01:03:23
+So my thinking is we try to set it up there, but instead of doing manual steps, we make every step programmatic.
+
+speaker2 01:03:34
+All right.
+
+speaker2 01:03:36
+And we set up a single NHID secret, put stuff in there.
+
+speaker2 01:03:42
+and we can work with it.
+
+speaker2 01:03:44
+If there's any problems with communicating with AutoFactory, I've worked very closely with Brian Hitchens, so I'm sure we can work through any of that.
+
+speaker2 01:03:55
+So I think we just do it.
+
+speaker2 01:03:58
+The one thing I didn't see, and I think it's probably in the pipeline side, is there's an aspect wherever we have a code build building a Docker container and pushing it to ECR.
+
+speaker2 01:04:07
+So I was expecting to see that, but maybe that's this afternoon's conversation.
+
+speaker3 01:04:14
+Is there afternoon conversation?
+
+speaker2 01:04:19
+I know what calendars they move around on the office.
+
+speaker3 01:04:22
+No, but send me send me the invite, so that piece is actually in the application.
+
+speaker3 01:04:27
+I can walk you through that.
+
+speaker3 01:04:29
+It's not in the pipeline that we're showing I'm showing you today, but.
+
+speaker2 01:04:36
+My one ask is any further meetings?
+
+speaker2 01:04:40
+Can we make sure we have Rob Ferney on it, because yeah, sure,
+
+speaker2 01:04:44
+I lead a team and I'm all over the place and I have major deliverables tomorrow and then Tuesday for platinum.
+
+speaker2 01:04:53
+And I want, Rob's the person who is going to be primary on this work.
+
+speaker2 01:04:57
+So I really want to include him on it.
+
+speaker1 01:04:59
+Sure, definitely.
+
+speaker1 01:05:00
+I'll include him actually.
+
+speaker1 01:05:02
+So I'll forward the afternoon invite to Siri as well.
+
+speaker1 01:05:09
+So that's something the IAC pipeline that we will try to get it ready before our meeting probably.
+
+speaker1 01:05:17
+We have the repo, we will share the access with you and then we will also create the IAC pipeline repo and maybe we can talk in the afternoon what to and how to set up.
+
+speaker1 01:05:26
+I have included MDTC as well there.
+
+speaker1 01:05:30
+That's I think hope that would be if that would work.
+
+speaker1 01:05:33
+The other question I have, yeah, right.
+
+speaker2 01:05:37
+I was going to say, I think we need to pick an account where we can start getting this deployed clean, right, from ground zero.
+
+speaker2 01:05:44
+Now, so I can imagine there being politics here, because I go, I own SFZ004, we can use it, no impact, but there might be a desire for single family to own the account now that I know single family is involved.
+
+speaker2 01:06:02
+If there's any concern on using SFC, just tell me what it could get.
+
+speaker2 01:06:07
+I think we should pick an account.
+
+speaker3 01:06:09
+Yeah, there's a account already.
+
+speaker3 01:06:11
+It's a set, set 0003, I think.
+
+speaker2 01:06:16
+OK, I mean, I'm looking for build ground 0 up from though, right?
+
+speaker2 01:06:20
+Because I don't want to have any questions, right?
+
+speaker2 01:06:22
+We need to be able to start here, get here and not miss anything.
+
+speaker3 01:06:27
+Yeah, I think we could use that one because it already has one instance.
+
+speaker3 01:06:32
+there already.
+
+speaker2 01:06:33
+But that means I'm not building up the bootstrap.
+
+speaker3 01:06:37
+No, it was that one, it was built manually.
+
+speaker3 01:06:42
+So this is, yeah, that was building manually.
+
+speaker3 01:06:46
+This one we're doing like we create the automation.
+
+speaker3 01:06:48
+So I think we could, we would, we, the plan was gonna use that account.
+
+speaker2 01:06:54
+Oh, but you haven't done the bootstrap yet.
+
+speaker3 01:06:57
+No.
+
+speaker2 01:06:59
+Perfect.
+
+speaker2 01:06:59
+I mean, if that works for everyone, I don't care what account it is.
+
+speaker2 01:07:02
+I just think we need to click an account.
+
+speaker3 01:07:04
+Yeah, there's no bootstrap on that one yet.
+
+speaker1 01:07:07
+Okay, so I think, yeah, I'm fine, but I'll check with Jhari in case if he has anything.
+
+speaker1 01:07:13
+If you're using the same thing, I think he knows already, so we should be okay.
+
+speaker1 01:07:17
+The one question I have is, like, because you're talking about the automation, right, Topaz, like, at least from the expectations wise.
+
+speaker1 01:07:27
+from CK, kind of to have, and eventually at least to kind of bring up the non-prod instance at least as soon as possible to, kind of a thing.
+
+speaker1 01:07:39
+So I don't know, from the automation perspective, because he has given next week timeline to bring up non-prod instance at least.
+
+speaker1 01:07:48
+So that's where I'm trying to see.
+
+speaker2 01:07:51
+I mean, neither me.
+
+speaker2 01:07:54
+I'm still not sure where to look at the code at.
+
+speaker2 01:07:56
+Right.
+
+speaker2 01:07:57
+So let me just be open and transparent.
+
+speaker2 01:08:00
+I'm not making commitments, but I will commit to outside of having someone dedicated to it.
+
+speaker2 01:08:07
+Right.
+
+speaker2 01:08:07
+And I'm sure we can get dev up next week.
+
+speaker2 01:08:10
+I'm not going to commit to having prod next week.
+
+speaker3 01:08:13
+Yeah.
+
+speaker2 01:08:14
+Or non non-prod next week, but I'm sure we can get through dev
+
+speaker2 01:08:19
+Friday of next week, sure, right?
+
+speaker2 01:08:23
+Because, if we run into problems, we'll be transparent on the problems, right?
+
+speaker2 01:08:28
+If we need to say, Hey, we're running into this problem, we're trying to work through this, we'll be transparent, right?
+
+speaker2 01:08:33
+It's energistic, but I'm not gonna make a commitment that I can't keep, because the only commitment I can really make is that I'll have someone, you know, with this as their top priority.
+
+speaker1 01:08:45
+Got it, got it, yeah.
+
+speaker1 01:08:47
+Yeah, thank you.
+
+speaker1 01:08:48
+Thank you, Topaz.
+
+speaker1 01:08:48
+I agree.
+
+speaker1 01:08:49
+I think there may be some challenges.
+
+speaker1 01:08:50
+I think we'll communicate as we go.
+
+speaker1 01:08:53
+I think how we are.
+
+speaker1 01:08:54
+I think that's, yeah, I think we can do that.
+
+speaker1 01:08:59
+Sorry, you got disconnected.
+
+speaker4 01:09:02
+No, you're online.
+
+speaker2 01:09:03
+Are you fine?
+
+speaker1 01:09:04
+Yeah, okay.
+
+speaker1 01:09:06
+So, yeah, I think I'm good.
+
+speaker1 01:09:09
+Thank you, actually, Siri.
+
+speaker1 01:09:12
+Maybe I think we need to have some checkpoints or kind of a thing.
+
+speaker1 01:09:17
+I don't know, weekly, at least a couple of times.
+
+speaker1 01:09:20
+Maybe I'll set up another call, maybe, after tomorrow.
+
+speaker1 01:09:25
+And maybe I have a call in the afternoon as well and see how that goes.
+
+speaker3 01:09:31
+Yeah.
+
+speaker1 01:09:32
+Okay.
+
+speaker1 01:09:35
+I think we are good, right, for now.
+
+speaker1 01:09:37
+I think maybe we can meet again in the afternoon.
+
+speaker3 01:09:40
+Yeah, I'll send you all those things.
+
+speaker3 01:09:44
+this other things right after this.
+
+speaker3 01:09:48
+Sure, What was the meeting this afternoon?
+
+speaker1 01:09:54
+Actually, it was about the ISC pipeline that we needed to set up.
+
+speaker1 01:09:58
+I thought Rob is only going to help with the ISC pipeline, but I think he's everywhere.
+
+speaker1 01:10:02
+So I will include, it's 3 o'clock.
+
+speaker1 01:10:08
+I'll forward to you.
+
+speaker3 01:10:09
+It's the, this is a CI, right?
+
+speaker3 01:10:12
+Or CV.
+
+speaker1 01:10:13
+This is the CD.
+
+speaker3 01:10:19
+Which is what we just talked.
+
+speaker1 01:10:20
+About, the V2, yeah, so this is like whatever we're gonna do is until artifact is gonna push from there it needs to kind of, you know, push it to S3 and then deploy, right?
+
+speaker2 01:10:35
+So that that's the V2, but there's a we need, we need with V.
+
+speaker2 01:10:41
+We need all sides in alignment, right?
+
+speaker2 01:10:43
+Because what we get has to be actionable, right?
+
+speaker2 01:10:47
+And we have to have a way of it.
+
+speaker2 01:10:51
+I think of it as a gestalt, right, holistically.
+
+speaker2 01:10:59
+But we'll get through it.
+
+speaker2 01:11:01
+I don't think there's anything too hard here.
+
+speaker2 01:11:05
+You know, we just have to make
+
+speaker2 01:11:07
+It's going to be mapping things out, right?
+
+speaker2 01:11:09
+Building out the dependencies, mapping things out.
+
+speaker1 01:11:11
+Exactly.
+
+speaker2 01:11:11
+Yeah.
+
+speaker3 01:11:13
+Okay.
+
+speaker3 01:11:13
+Rob, Rob is in that meeting.
+
+speaker3 01:11:15
+Okay.
+
+speaker1 01:11:15
+Yeah.
+
+speaker3 01:11:20
+Okay.
+
+speaker3 01:11:20
+Yeah.
+
+speaker1 01:11:24
+Thank you.
+
+speaker1 01:11:24
+Thank you.
+
+speaker1 01:11:25
+I think let's see you in the afternoon.
+
+speaker1 01:11:27
+Thank you very much.
+
+speaker2 01:11:28
+Thank you.
+
+speaker2 01:11:29
+Bye.
+
+speaker1 01:11:29
+Bye.
+
