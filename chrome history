@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""
+Export Chrome history to CSV on one machine and import it into Chrome on another.
+
+Usage:
+  python chrome_history_transfer.py export history.csv
+  python chrome_history_transfer.py import history.csv
+
+Optional: --profile "Profile 1"   (default is "Default")
+          --history-path PATH     (use an explicit History file)
+
+IMPORTANT for import: fully close Chrome first (check the system tray / Task Manager).
+A backup of the target History file is made automatically.
+"""
+import argparse
+import csv
+import os
+import platform
+import shutil
+import sqlite3
+import sys
+import tempfile
+import time
+
+# Chrome timestamps = microseconds since 1601-01-01 UTC
+CHAIN_START_END = 0x30000000  # transition qualifiers so visits show up normally
+
+
+def default_history_path(profile):
+    system = platform.system()
+    if system == "Windows":
+        base = os.path.join(os.environ["LOCALAPPDATA"], "Google", "Chrome", "User Data")
+    elif system == "Darwin":
+        base = os.path.expanduser("~/Library/Application Support/Google/Chrome")
+    else:
+        base = os.path.expanduser("~/.config/google-chrome")
+    return os.path.join(base, profile, "History")
+
+
+def export_history(history_path, out_csv):
+    # Copy first: Chrome locks the file while running
+    tmp = os.path.join(tempfile.gettempdir(), "chrome_history_copy.sqlite")
+    shutil.copy2(history_path, tmp)
+    con = sqlite3.connect(tmp)
+    rows = con.execute(
+        "SELECT url, title, visit_count, typed_count, last_visit_time "
+        "FROM urls WHERE hidden = 0 ORDER BY last_visit_time DESC"
+    ).fetchall()
+    con.close()
+    os.remove(tmp)
+
+    with open(out_csv, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["url", "title", "visit_count", "typed_count", "last_visit_time"])
+        w.writerows(rows)
+    print(f"Exported {len(rows)} URLs to {out_csv}")
+
+
+def import_history(history_path, in_csv):
+    if not os.path.exists(history_path):
+        sys.exit(f"History file not found: {history_path}\nOpen Chrome once on this laptop, then close it.")
+
+    backup = f"{history_path}.backup-{time.strftime('%Y%m%d-%H%M%S')}"
+    shutil.copy2(history_path, backup)
+    print(f"Backup saved: {backup}")
+
+    try:
+        con = sqlite3.connect(history_path, timeout=2)
+        con.execute("BEGIN IMMEDIATE")
+    except sqlite3.OperationalError:
+        sys.exit("History database is locked. Close Chrome completely and try again.")
+
+    added = updated = 0
+    with open(in_csv, newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            url = r["url"]
+            title = r["title"] or ""
+            vc = int(r["visit_count"] or 1)
+            tc = int(r["typed_count"] or 0)
+            lvt = int(r["last_visit_time"] or 0)
+
+            existing = con.execute("SELECT id, last_visit_time FROM urls WHERE url = ?", (url,)).fetchone()
+            if existing:
+                url_id, old_lvt = existing
+                if lvt > old_lvt:
+                    con.execute("UPDATE urls SET last_visit_time = ?, title = ? WHERE id = ?", (lvt, title, url_id))
+                    updated += 1
+                else:
+                    continue
+            else:
+                cur = con.execute(
+                    "INSERT INTO urls (url, title, visit_count, typed_count, last_visit_time, hidden) "
+                    "VALUES (?, ?, ?, ?, ?, 0)",
+                    (url, title, vc, tc, lvt),
+                )
+                url_id = cur.lastrowid
+                added += 1
+
+            # One visit entry so the URL appears on chrome://history
+            con.execute(
+                "INSERT INTO visits (url, visit_time, transition) VALUES (?, ?, ?)",
+                (url_id, lvt, CHAIN_START_END),
+            )
+
+    con.commit()
+    con.close()
+    print(f"Imported: {added} new URLs, {updated} updated. Start Chrome to see them.")
+
+
+def main():
+    p = argparse.ArgumentParser(description="Export/import Chrome history")
+    p.add_argument("mode", choices=["export", "import"])
+    p.add_argument("csv_file")
+    p.add_argument("--profile", default="Default")
+    p.add_argument("--history-path")
+    a = p.parse_args()
+
+    path = a.history_path or default_history_path(a.profile)
+    if a.mode == "export":
+        export_history(path, a.csv_file)
+    else:
+        import_history(path, a.csv_file)
+
+
+if __name__ == "__main__":
+    main()
