@@ -1,0 +1,468 @@
+# SkillCatalog Business Functionality Specification
+
+**Document purpose:** Product and engineering requirements for implementing SkillCatalog in a separate work environment using Spec-Driven Development (SDD).
+
+**Product type:** Web application for discovering, authoring, organizing, and exporting reusable AI-agent skills.
+
+**Status:** Describes the current frontend product and the backend behavior required to make it a persistent, multi-user-ready application. It is not a claim that a production backend, authentication, or repository synchronization already exists.
+
+## 1. Product summary
+
+SkillCatalog gives people a shared place to find useful agent workflows and create new ones. A skill is a named, described, tagged set of instructions, usually written in Markdown. Users can browse and filter skills, inspect their full instructions, create or edit a skill, and export a skill package. Administrators or workspace managers can connect skill sources and configure refresh behavior.
+
+The initial product should work with a persistent backend as the source of truth. A user-created skill should become available in the catalog immediately after a successful save and remain available after reload and on other authorized clients.
+
+## 2. Goals and success outcomes
+
+### Goals
+
+1. Make it easy to discover relevant skills in a growing catalog.
+2. Allow users to create and maintain original skills without editing application code.
+3. Persist skills centrally when the backend is configured.
+4. Keep skill instructions portable through Markdown copy and ZIP export.
+5. Provide source management and operational summaries to support a curated catalog.
+6. Make loading, validation, and backend failures clear to the user.
+
+### Success measures
+
+- A user can create a valid skill and see it in the library without manually refreshing the browser.
+- A saved skill remains present after reload and is visible to other authorized users sharing the same catalog.
+- Users can locate skills by name, description, or topic and can narrow results by source and sort order.
+- Users can copy or export a skill's complete instruction content.
+- Failed saves do not appear successful and do not silently fall back to browser-only storage.
+
+## 3. Users and access assumptions
+
+### User types
+
+- **Catalog user:** Browses, searches, reads, copies, exports, creates, and edits skills.
+- **Catalog manager:** Manages sources, initiates source synchronization, and changes catalog-wide refresh settings.
+
+### Access assumptions and open implementation decisions
+
+- The current frontend has no sign-in or role-based access control. Authentication and authorization must be supplied by the production system if the catalog is not intentionally public.
+- Decide whether all signed-in users may edit all skills or only skills they own. The existing UI presents edit actions without ownership checks.
+- Decide whether source and scheduler settings are global, organization-level, or user-level. Current screens treat them as workspace settings.
+- Demo content must be clearly identified as sample content. Demo metric values must not be represented as verified real-world popularity.
+
+## 4. Scope
+
+### In scope
+
+- Overview page and links to core workflows.
+- Skill catalog search, topic filtering, source filtering, sorting, grid/list presentation, and empty/loading/error states.
+- Skill details, full Markdown instructions, copy action, and downloadable ZIP package.
+- Skill creation/editing, Markdown import, live text preview, basic formatting controls, and save.
+- Source create/edit/delete and manual synchronization request.
+- Catalog insights and workspace refresh/token settings.
+- API integration and persistent user-created skills.
+- Local demo mode for development when no API address is configured.
+
+### Not in scope for the initial backend unless separately approved
+
+- AI generation or automatic rewriting of skills.
+- Automatic discovery of arbitrary repositories without an explicit source connection.
+- Payments, public ratings, comments, social profiles, or a moderation workflow.
+- Fine-grained version history, branching, and approval/publishing workflow.
+- Treating a successful sync request as proof that repository content has been imported; sync behavior must be implemented and reported by the backend.
+
+## 5. Primary user journeys
+
+### 5.1 Discover a skill
+
+1. User opens the application and sees an overview with catalog counts and featured skills.
+2. User opens **Skill Library**.
+3. User searches by skill name, description, or topic; optionally selects one or more topics, a source, and a sort order.
+4. User opens a result to inspect its description, tags, platform metadata, and full `SKILL.md` content.
+5. User copies the Markdown or downloads a ZIP package.
+
+### 5.2 Create a skill
+
+1. User opens **Skill Studio** using a create action.
+2. User enters a skill name, short description, optional comma-separated topics, and Markdown instructions; optionally imports a Markdown/text file.
+3. The UI shows a live preview and supports basic Markdown formatting.
+4. User saves. The client validates required fields and submits the skill to the backend.
+5. On success, the backend returns the canonical saved skill including its ID. The client refreshes catalog state and opens the saved skill's detail page.
+6. On failure, the client displays the error and preserves the entered draft so the user can retry.
+
+**Business meaning of “automatically added”:** After a successful backend save, the skill is persisted and included in subsequent catalog reads without a separate administrator import. This does not mean the app generates skill content automatically or imports it from a repository without a configured sync process.
+
+### 5.3 Edit a skill
+
+1. User opens a skill and selects **Edit skill**.
+2. The editor is prefilled with current metadata and Markdown.
+3. User changes the content and saves.
+4. The backend updates the same skill record; the client returns to the saved detail page.
+5. Authorization and conflict behavior are enforced by the backend.
+
+### 5.4 Manage a source
+
+1. A manager opens **Sources** and adds a source name and URL.
+2. The manager may edit source metadata, request a sync, or remove a source after confirmation.
+3. The UI reloads source information after successful changes.
+4. Sync execution, source status, imported skill counts, and timestamps are authoritative backend data.
+
+### 5.5 Review catalog insights and settings
+
+1. User reviews catalog totals, top skills by stars, and common topics.
+2. Manager chooses a supported refresh schedule and concurrency value.
+3. Manager may submit a GitHub token to the backend. The token is never written to frontend persistent storage and is cleared from the form after save.
+4. The backend validates settings and protects any credential at rest.
+
+## 6. Functional requirements
+
+### Overview
+
+- **FR-OV-1:** Show the total number of skills and connected sources.
+- **FR-OV-2:** Show up to three featured skills, ordered by stars when real star metadata exists.
+- **FR-OV-3:** Provide navigation to the library and skill creation.
+- **FR-OV-4:** Show meaningful zero-data, loading, and error states; do not present fabricated popularity as live community data.
+
+### Skill library
+
+- **FR-LIB-1:** List skills from the configured backend.
+- **FR-LIB-2:** Search by skill name, description, and tags/topics.
+- **FR-LIB-3:** Filter by one or more tags and by source.
+- **FR-LIB-4:** Sort by stars/popularity, downloads, last updated, and name ascending.
+- **FR-LIB-5:** Let users switch between grid and list presentation without changing catalog data.
+- **FR-LIB-6:** Show the matching result count and a recoverable empty state.
+- **FR-LIB-7:** Refresh the list after a create/edit operation so newly saved skills are visible.
+- **FR-LIB-8:** Keep filter behavior consistent between frontend and backend; document supported sort keys and tag semantics.
+
+### Skill detail and export
+
+- **FR-DET-1:** Display a skill's name, description, topics, source, language, version, platforms, dates, metrics, and complete Markdown content when present.
+- **FR-DET-2:** Copy the complete Markdown instruction content to the clipboard and confirm success.
+- **FR-DET-3:** Export a ZIP containing `SKILL.md`, `skill.json`, and a human-readable `README.md`.
+- **FR-DET-4:** Provide an edit action when the user is authorized.
+- **FR-DET-5:** Handle missing/deleted skill IDs as not found and surface other API failures.
+
+### Skill authoring
+
+- **FR-AUTH-1:** Require a non-empty name and description; trim surrounding whitespace.
+- **FR-AUTH-2:** Normalize names to lowercase hyphen-separated identifiers for the current editor behavior. The backend must validate uniqueness and define how collisions are reported.
+- **FR-AUTH-3:** Accept optional tags/topics as a list; normalize whitespace and reject or deduplicate invalid entries consistently.
+- **FR-AUTH-4:** Accept the full Markdown content as skill instructions.
+- **FR-AUTH-5:** Support importing a local `.md`, `.txt`, or `.skill` file into the editor.
+- **FR-AUTH-6:** Provide a live preview and basic Markdown editing helpers.
+- **FR-AUTH-7:** Create with `POST /skills`; update with `PUT /skills/{id}`.
+- **FR-AUTH-8:** Only show a successful save after the backend confirms persistence and returns the canonical saved record.
+- **FR-AUTH-9:** Preserve user input when validation, network, or server errors occur.
+- **FR-AUTH-10:** A newly created skill must be immediately discoverable through subsequent catalog reads.
+
+### Source management
+
+- **FR-SRC-1:** List sources with name, URL, source type, status, associated skill count, and last-sync time.
+- **FR-SRC-2:** Create and update a source.
+- **FR-SRC-3:** Delete a source only after user confirmation. The backend must define whether associated skills are retained, detached, or deleted; deletion must not silently destroy skills.
+- **FR-SRC-4:** Allow a manager to request synchronization of one source.
+- **FR-SRC-5:** Report asynchronous sync state and failures truthfully. A `202 Accepted` response may indicate queued work; it must not be shown as completed sync.
+
+### Insights and settings
+
+- **FR-INS-1:** Derive catalog totals, topic counts, and top-skill displays from backend data.
+- **FR-INS-2:** Distinguish unavailable metrics from zero. Locally authored skills may initially have zero stars and downloads.
+- **FR-SET-1:** Read current schedule and concurrency from the backend.
+- **FR-SET-2:** Allow supported refresh schedules (hourly, every 3/6/12 hours, daily) and concurrency values (1, 2, 3, 5, 10), unless the backend advertises a different supported set.
+- **FR-SET-3:** Submit settings to the backend and surface validation or persistence failures.
+- **FR-SET-4:** Submit an optional GitHub token only over HTTPS to the backend. Never embed it in a frontend build variable, local storage, URL, or logs.
+- **FR-SET-5:** Clear the token input after any submission attempt; if the save fails, tell the user that the token must be entered again before retrying. Never persist it in the browser.
+
+## 7. Business rules and data definitions
+
+### Skill
+
+| Field | Type | Rule |
+|---|---|---|
+| `id` | integer or backend-defined stable identifier | Assigned by backend; unique and immutable. |
+| `name` | string | Required, human-readable identifier; normalized to lowercase hyphen-separated form by current UI. |
+| `description` | string | Required, concise summary. |
+| `stars` | integer | Non-negative popularity metric. Must be real/attributed or explicitly unavailable; newly authored skills default to zero only if that is the agreed business rule. |
+| `downloads` | integer | Non-negative download metric; increment semantics must be defined by backend. |
+| `language` | string | Indicates content or implementation language for display. |
+| `tags` | array of strings | Zero or more searchable topics; normalized consistently. |
+| `platforms` | array of strings | Agent environments/platforms supported by the skill. |
+| `source` | string | Source name or ownership/origin display value. Define whether this is a source ID, owner name, or provenance label. |
+| `updated` | ISO date | Last modification date in UTC or a clearly defined timezone. |
+| `version` | string | Version identifier; define whether it is user-editable or backend-managed. |
+| `skill_md_content` | string | Full portable Markdown instruction body. |
+
+### Source
+
+| Field | Type | Rule |
+|---|---|---|
+| `id` | integer or backend-defined stable identifier | Assigned by backend; unique and immutable. |
+| `name` | string | Required display name. |
+| `url` | URL | Required valid URL; scheme and supported source types are backend-validated. |
+| `type` | enum | `github_repo` or `awesome_list` in the current frontend contract. |
+| `status` | enum | `active`, `syncing`, or `error`; must reflect backend state. |
+| `skills_count` | integer | Non-negative count of skills associated with the source. |
+| `last_synced_at` | timestamp or empty | Last completed sync timestamp; not the time a job was merely queued. |
+
+### Settings
+
+- `sync_cron`: schedule expression representing an agreed supported refresh cadence.
+- `sync_concurrency`: positive integer restricted to supported values.
+- `github_token`: optional write-only credential input; must not be returned by settings/status reads.
+
+## 8. Backend API contract for frontend integration
+
+The current client is configured with an API base URL and appends the paths below. The examples are JSON shapes expected by the frontend; implementations may extend them, but should preserve the required fields.
+
+### List skills
+
+`GET /skills?search={text}&tags={comma,separated,tags}&source_id={id}&sort={sort}&page=1&page_size=100`
+
+Supported sort values sent by the client:
+
+- `-stars`
+- `-downloads`
+- `-last_updated_at`
+- `name`
+
+Response may be either an array of skills or:
+
+```json
+{
+  "items": [
+    {
+      "id": 101,
+      "name": "release-note-weaver",
+      "description": "Create clear release notes from merged changes.",
+      "stars": 0,
+      "downloads": 0,
+      "language": "Markdown",
+      "tags": ["release", "writing"],
+      "platforms": ["GitHub Copilot"],
+      "source": "workspace",
+      "updated": "2026-10-22",
+      "version": "1.0.0",
+      "skill_md_content": "# Release Note Weaver\n..."
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 100
+}
+```
+
+The current UI requests only the first 100 entries. Production pagination beyond 100 results requires coordinated UI/API work.
+
+### Get, create, and update a skill
+
+- `GET /skills/{id}` -> one skill; return `404` if absent.
+- `POST /skills` -> create a skill; return the canonical created record, including its assigned `id`.
+- `PUT /skills/{id}` -> update a skill; return the canonical updated record.
+
+Create/update request body:
+
+```json
+{
+  "name": "release-note-weaver",
+  "description": "Create clear release notes from merged changes.",
+  "stars": 0,
+  "downloads": 0,
+  "language": "Markdown",
+  "tags": ["release", "writing"],
+  "platforms": ["GitHub Copilot", "Cursor"],
+  "source": "workspace",
+  "updated": "2026-10-22",
+  "version": "1.0.0",
+  "skill_md_content": "# Release Note Weaver\n..."
+}
+```
+
+Define duplicate-name behavior (recommended: reject with `409 Conflict` or return a field validation error). The backend must not silently create duplicates if skill names are intended to be unique.
+
+### Sources
+
+- `GET /sources` -> array of sources or `{ "items": [...] }`.
+- `POST /sources` -> create a source; return the saved source.
+- `PUT /sources/{id}` -> update a source; return the saved source.
+- `DELETE /sources/{id}` -> delete/detach according to the data-retention rule.
+- `POST /sources/{id}/sync` -> request source synchronization. Return a clear job/status response; the current client does not yet poll a job.
+
+### System settings
+
+- `GET /system/status` -> scheduler status, including `scheduler.cron_expression` and `scheduler.concurrency`.
+- `PUT /system/settings` -> save `{ "sync_cron": "...", "sync_concurrency": 3, "github_token": "..." }`; token is omitted if not supplied.
+- Responses from status/settings must never echo the token.
+
+### Errors and transport
+
+- Use standard HTTP status codes: `400`/`422` for validation, `401`/`403` for authentication/authorization, `404` for missing records, `409` for conflicts, `5xx` for server failures.
+- Return a safe, actionable error message in the response body. Never include secrets, stack traces, or sensitive upstream details.
+- Configure CORS for the exact approved frontend origins.
+- The frontend must distinguish API mode from demo mode and must not silently replace failed API responses with demo content.
+
+## 9. Non-functional requirements
+
+- **Persistence:** Production catalog data is stored server-side; browser local storage is not the system of record.
+- **Security:** Use HTTPS in deployed environments, validate and authorize every write on the server, protect credentials, and avoid logging tokens or full sensitive request bodies.
+- **Input handling:** Validate string lengths, Markdown size, tag count/length, enum values, URLs, and identifiers on the server.
+- **Reliability:** Failed operations return explicit errors; writes should be atomic and safe to retry where possible.
+- **Usability:** Provide loading, success, empty, and error states; preserve drafts after recoverable failures.
+- **Accessibility:** All controls are keyboard accessible, have accessible names, and communicate validation/errors to assistive technologies.
+- **Performance:** Search and filtering should return promptly for expected catalog sizes; define response-time and maximum dataset targets with the delivery team.
+- **Portability:** Skill content must be exportable independently from the application in a standard Markdown package.
+- **Observability:** Record operational events and sync outcomes without logging credentials or unnecessary skill content.
+
+## 10. Acceptance tests
+
+1. **New skill persists:** Given an authorized user and valid skill fields, when they save, then the backend creates one record, returns its ID, and the skill appears in the library and remains after reload.
+2. **Create failure is visible:** Given a backend validation or network error, when the user saves, then an error is shown, editor fields remain populated, and no success navigation occurs.
+3. **Duplicate is handled:** Given a skill name already in use, when a user attempts to create another with that identifier, then the API applies the documented duplicate policy and the UI presents a useful message.
+4. **Edit updates same record:** Given an existing skill, when an authorized user changes and saves it, then its stable ID remains unchanged and updated content appears after reload.
+5. **Search and filter:** Given skills matching different names, tags, and sources, when the user searches and applies filters, then only matching results are shown and the result count is correct.
+6. **Sort order:** Given skills with distinct metric/date/name values, when the user selects each sort option, then result ordering follows the documented rule.
+7. **Detail/export:** Given an existing skill, when the user opens it and copies or exports it, then the complete Markdown is copied and the ZIP contains the documented files and metadata.
+8. **Not found:** Given an unknown skill ID, when the detail route loads, then a clear not-found state is shown rather than an indefinite spinner.
+9. **Source lifecycle:** Given a manager, when they create, edit, delete, or request sync on a source, then the backend state is reflected after refresh and associated-skill retention follows the documented rule.
+10. **Settings and secret handling:** Given a valid schedule and token, when settings are saved, then settings persist, token is not returned by reads or stored in the browser, and the UI clears the token input.
+11. **Demo/API separation:** Given API mode is enabled and the API fails, then the UI displays an API error and does not show demo data as if it were live.
+12. **Demo mode:** Given no API URL is configured, then sample content loads and user changes persist only in that browser's demo storage.
+
+## 11. Suggested SDD delivery sequence
+
+1. **Confirm product decisions:** Authentication model, ownership/edit permissions, source deletion retention, unique-name policy, metadata ownership, and whether source synchronization is in the first release.
+2. **Define API schema:** Finalize request/response schemas, validation errors, pagination, auth, and source-sync job semantics.
+3. **Implement backend domain and persistence:** Skill/source/settings entities, validation, repository layer, authorization, migrations, and audit-safe credential handling.
+4. **Implement API and tests:** Endpoints in Section 8 plus contract, integration, authorization, validation, and persistence tests.
+5. **Connect frontend:** Configure API origin, align API response types, confirm CORS/auth strategy, and verify create/edit/list/detail workflows end-to-end.
+6. **Implement operational jobs:** Source fetch/import, scheduler, concurrency, retry behavior, and observable sync status if required.
+7. **Release readiness:** Security review, accessibility, error paths, backup/restore, deployment configuration, and production smoke tests.
+
+## 12. Decisions required before production
+
+- Is the catalog public, authenticated, or organization-only?
+- Can any authenticated user edit any skill, or only its creator/maintainers?
+- Are skill names unique globally, per workspace, or per source?
+- Who owns `stars`, `downloads`, `version`, `language`, `platforms`, and `source` for user-authored skills?
+- Does deleting a source delete its imported skills, detach them, or retain them with provenance?
+- Is repository synchronization required for the first backend release, or is user-authored skill persistence the initial MVP?
+- What is the expected maximum catalog size and required pagination/search performance?
+- Which deployment origins and credential/token scopes are approved?
+
+## 13. User-facing feature coverage and traceability
+
+This section maps the complete current navigation and visible user workflows to requirements. “Current frontend behavior” records what the SkillCatalog frontend does today; “required product behavior” is the expected outcome for a rebuilt, production-quality app. A visible control is not considered a completed business feature unless its outcome is defined and verifiable.
+
+| Screen or entry point | Current frontend behavior | Required product behavior | Covered by |
+|---|---|---|---|
+| Global shell | Sidebar navigation to Overview, Skill Library, Sources, Skill Studio, Insights, and Settings; top bar shows workspace label, quick-search link, API/demo indicator, and New skill button. | Keep navigation available across routes, indicate the active section and actual connection state, and make every visible control functional and keyboard accessible. | FR-OV, FR-LIB, FR-AUTH, FR-SRC, FR-INS, FR-SET; Section 14 |
+| Mobile navigation | Sidebar becomes a slide-in menu with a scrim and close-on-navigation behavior at narrow widths. | Preserve route access and clear close behavior on mobile; support keyboard focus and escape/close semantics. | Section 14 |
+| Overview (`/`) | Hero message and decorative art; counts for skills, sources, and summed stars; three highest-star skills; links to library and editor. | Counts and featured results must reflect available catalog data; mark missing/unverified metrics; provide clear empty/error states and entry points. | FR-OV |
+| Skill Library (`/library`) | Debounced text search; source selection; topic pills; sorting by stars, downloads, update date, or name; grid/list toggle; matching count; clear filters; skill cards. | Search by name/description/tags; combine filters consistently; show accurate total/matching counts; define stable sorting and pagination; support empty/loading/error and keyboard search behavior. | FR-LIB; Section 14 |
+| Skill detail (`/skills/{id}`) | Shows title, description, source, tags, stars, downloads, language, updated date, version, supported platforms, full Markdown, copy, edit, and ZIP export. A source link is shown for non-demo skills. | Resolve valid IDs; provide not-found, loading, and retry/error states; show accurate provenance; implement reliable copy/export and permission-aware editing. | FR-DET; Section 14 |
+| Skill Studio (`/editor`, `/editor/{id}`) | Create/edit metadata and Markdown; import `.md`, `.txt`, or `.skill`; preview text; word/line count; basic bold/italic/code/heading/bullet helpers; save. | Validate and persist authoring fields; preserve draft on failure and intentional navigation; clarify Markdown/frontmatter support; report save outcome; refresh catalog after create/edit. | FR-AUTH; Section 14 |
+| Sources (`/sources`) | Add/edit source name and URL; list status/count/last-sync; open non-demo URLs; request sync; remove after confirmation. | Validate supported source URL/type; enforce authorization; preserve associated skills according to policy; show queued/running/completed/failed sync results and logs where synchronization is supported. | FR-SRC; Section 14 |
+| Insights (`/dashboard`) | Computes total skills, sources, stars, downloads, top six skills by stars, and up to six topic counts from current app state. Displays “Updated just now.” | Use authoritative data and timestamps; explain unavailable metrics; avoid fabricated operational currency; provide meaningful empty/loading/error states. | FR-INS; Section 14 |
+| Settings (`/settings`) | Loads scheduler values; lets user select five schedule presets and concurrency 1/2/3/5/10; accepts a masked token; saves settings/token; displays API/demo configuration note. | Authorize changes; validate and persist settings; validate token server-side; never return or log token; provide truthful save/validation status and clear input according to credential policy. | FR-SET; Section 14 |
+| Unknown route | Renders a not-found message and link back to the library. | Keep a clear recovery path for unknown routes. The legacy `/marketplace` path redirects to `/library`. | Section 14 |
+
+## 14. End-to-end experience requirements
+
+### Navigation and route behavior
+
+- **UX-1:** The primary navigation contains Overview, Skill Library, Sources, Skill Studio, Insights, and Settings, with active-page indication and skill count where available.
+- **UX-2:** The brand returns to Overview. Quick search, Explore/Library, featured-skill, create-skill, edit-skill, and back-to-library links lead to the expected pages.
+- **UX-3:** Keep `/marketplace` as a compatibility redirect to `/library`; unknown routes show a recovery link instead of a blank screen.
+- **UX-4:** The mobile menu opens and closes accessibly, closes after navigation, and has a visible/keyboard-operable close mechanism.
+- **UX-5:** Do not advertise a keyboard shortcut unless it works. The current library displays `⌘ K`, but the frontend does not implement a key handler; either implement the shortcut (with platform-aware modifier and focus behavior) or remove the hint.
+
+### Loading, empty, error, and success states
+
+- **UX-6:** Distinguish initial loading from an empty catalog, no search results, missing record, API failure, and permission failure.
+- **UX-7:** Provide retry actions for recoverable reads and explain whether a write succeeded before navigation or clearing user input.
+- **UX-8:** Do not show an indefinite spinner when a requested skill is missing. Resolve `404` to the not-found state and provide a path back to the library.
+- **UX-9:** Keep errors close to the operation that failed and do not show stale data as current without labeling it.
+- **UX-10:** A header “API connected” indicator must represent a verified health check, not merely the presence of an API URL; otherwise label it “API configured.”
+
+### Skill discovery and browsing
+
+- **UX-11:** Debounce text search and communicate when results are being refreshed.
+- **UX-12:** Define whether multiple selected topics use AND or OR semantics; display all available facet options independently of the currently narrowed results if users are expected to broaden a search.
+- **UX-13:** Keep the matching count, displayed cards, and backend pagination totals consistent. The current API adapter always requests page 1 with page size 100; larger catalogs require pagination or a documented product cap.
+- **UX-14:** Grid/list switching changes presentation only; do not discard search, sort, source, or topic state.
+- **UX-15:** A card must have one clear primary navigation action. Any secondary action (including the current ellipsis control) must perform a defined task or be removed.
+
+### Skill detail, copy, and export
+
+- **UX-16:** Clipboard permission or browser errors must produce visible feedback and must not leave the user assuming content was copied.
+- **UX-17:** ZIP export must preserve the full instruction content and the agreed metadata schema; surface generation/download errors.
+- **UX-18:** Show an external repository link only when the skill has a real, valid repository URL. A local/workspace origin must not be formatted as a GitHub owner/repository path.
+- **UX-19:** Clearly distinguish sample metrics, user-authored skills, imported/source-backed skills, and unavailable metadata.
+
+### Skill authoring
+
+- **UX-20:** Define a canonical name/slug rule, uniqueness scope, allowed characters, and collision behavior. Validation must be shown at the field or form level.
+- **UX-21:** Define which fields users may edit. In the current frontend, new skills receive defaults for language (`Markdown`), platforms (`Claude Code`, `Cursor`), source (`local/skillcatalog`), stars/downloads (`0`), and version (`1.0.0`); the form does not ask for these values.
+- **UX-22:** State whether Markdown instructions are required and any maximum size. The current UI requires only name and description.
+- **UX-23:** If draft autosave is promised, persist it across route changes/reloads with clear recovery and discard behavior. The current editor says “Draft autosaves in this session,” but its fields are only component state and are not actually autosaved.
+- **UX-24:** Import must report unreadable/unsupported files and preserve the current draft if import fails. The current UI accepts `.md`, `.txt`, and `.skill`.
+- **UX-25:** The preview must either render sanitized Markdown or be explicitly described as a plain-text preview. The current editor displays raw text, not rendered Markdown.
+- **UX-26:** Formatting controls must apply predictable Markdown at the cursor/selection and remain usable with keyboard and assistive technology.
+- **UX-27:** On successful save, return the canonical backend record and route to its detail page. On failure, keep the entered values and show a retryable error.
+
+### Sources and synchronization
+
+- **UX-28:** Identify which source types are supported and validate URLs before save. The current create form only captures a name and URL and defaults the type to `github_repo`; the seed source is an `awesome_list`.
+- **UX-29:** Communicate that manual sync may be asynchronous. Show the latest actual job state and completion time; poll or refresh until a queued/running job reaches a terminal state.
+- **UX-30:** Provide confirmation for destructive source removal and clearly explain what happens to skills obtained from that source.
+- **UX-31:** Disable duplicate submissions while operations are running and show operation-specific progress/success/error feedback.
+
+### Insights and settings
+
+- **UX-32:** Explain metric definitions and source attribution; do not label summed demo values as community-wide totals.
+- **UX-33:** Use a real data-refresh timestamp instead of a hard-coded “Updated just now” label.
+- **UX-34:** Keep unsupported server-provided schedule values visible or provide a clear validation response rather than silently substituting a default.
+- **UX-35:** Provide clear token submission outcomes. Token validation and storage are backend responsibilities; a successful settings write alone must not imply the token has been validated unless the API confirms it.
+- **UX-36:** Keep secrets out of browser persistence, URL parameters, client logs, and error messages. Clear the field after any submission attempt; if the operation fails, require re-entry before retry.
+
+### Responsive design and accessibility
+
+- **UX-37:** Preserve the current desktop/sidebar, tablet, and mobile layouts across overview, library, detail, editor, sources, dashboard, and settings.
+- **UX-38:** All navigation, form inputs, filters, toggles, dialogs, copy/export actions, and editor tools must be keyboard operable with visible focus and accessible names.
+- **UX-39:** Announce loading, result updates, validation errors, save outcomes, and sync status to assistive technology without relying on color alone.
+- **UX-40:** Support narrow screens without horizontal overflow; on mobile, stack the editor panes and keep important actions reachable.
+
+## 15. Current frontend limitations to carry into rebuild planning
+
+These are observed gaps or caveats, not additional features already delivered:
+
+1. **No backend in this project:** API mode is a client adapter contract. Persistence, authentication, authorization, scheduled work, and repository processing must be implemented and verified separately.
+2. **No authentication or ownership UI:** All edit, source, and settings controls are exposed without role checks; the backend must enforce the chosen access model.
+3. **No actual quick-search shortcut:** The UI shows a `⌘ K` hint, but no keyboard listener focuses search.
+4. **No actual draft autosave:** The editor copy claims session autosave, but there is no persistence mechanism for drafts.
+5. **Not-found detail can spin indefinitely:** `getSkill` can return `null` for 404, while the detail component treats every null skill as still loading.
+6. **Library result ceiling:** The API client requests the first 100 skills only; no next-page control or result-total handling exists.
+7. **Source sync is not monitored:** The source screen sends one sync request and reloads sources. It does not poll job status, show logs, or verify completion.
+8. **Demo sync is simulated:** In demo mode, sync only changes `last_synced_at`; it does not contact a repository or import content.
+9. **Some user feedback is incomplete:** Clipboard and ZIP operations do not have complete failure handling; source sync/remove do not have a dedicated in-progress indicator.
+10. **Source provenance needs a model:** A locally created skill defaults to `local/skillcatalog`, but detail rendering treats every non-demo source as a GitHub repository slug.
+11. **Dashboard data is derived client-side:** Metrics and topic counts are computed from the loaded skills/sources; “Updated just now” is static, not a backend timestamp.
+12. **Settings do not validate GitHub credentials in the UI:** The token is posted to the backend when configured; demo mode does not store it. The frontend has no explicit token-validation response flow. It clears the field after a successful save but retains it after a failed save; the target requirement is to clear after every submission attempt and ask for re-entry on retry.
+13. **Editor preview is plain text:** It is not a rendered Markdown preview, and its frontmatter indicator checks delimiters only rather than parsing/validating fields.
+14. **Demo data is local and synthetic:** Demo skills and their stars/downloads are illustrative. Demo edits persist only in browser storage and are not shared across users.
+15. **No skill deletion flow:** Skills can be created and edited; the current detail UI has no delete action, even though deletion may be considered for a later product release.
+16. **The card overflow control has no action:** Either define a meaningful menu (for example, copy link) or omit the control from a rebuild.
+
+The rebuild should either implement a gap as an explicit requirement or intentionally exclude it and remove misleading labels/controls. It should not silently reproduce incomplete behavior as if it were finished.
+
+## 16. Expanded acceptance checklist
+
+- [ ] Every route and navigation action in Section 13 works, including the legacy redirect and unknown-route recovery.
+- [ ] Desktop, tablet, and mobile navigation/layouts work without loss of content or controls.
+- [ ] Keyboard shortcuts are implemented if shown; all interactive controls have visible keyboard focus.
+- [ ] Skill list search/filter/sort/count behavior agrees with API results and pagination.
+- [ ] Search, source, tag, sort, and view state behave consistently when users change filters or open/return from details.
+- [ ] Missing skills show not-found; API errors offer a useful recovery action rather than indefinite loading.
+- [ ] Copy/export success and failure states are clear; exports contain valid content and metadata.
+- [ ] Authoring validation covers name, description, content policy, tags, size, and uniqueness; imported files fail safely.
+- [ ] Draft persistence behavior matches the UI promise.
+- [ ] A successful create/update persists centrally and is visible after reload; failed writes preserve the draft.
+- [ ] Source CRUD, destructive confirmation, source provenance, asynchronous sync progress, and terminal sync outcomes are tested.
+- [ ] Dashboard values and timestamps are authoritative or clearly labeled as unavailable/sample.
+- [ ] Settings persist and token validation is explicit; no secrets are returned, stored client-side, or leaked in logs.
+- [ ] API mode failures never masquerade as demo success; demo-only behavior is clearly labeled.
+- [ ] Accessibility checks include keyboard-only operation, accessible naming, status announcements, and responsive zoom/layout.
