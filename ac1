@@ -1,0 +1,83 @@
+AgentCore POC Evaluation and Workshop Planning
+Recording Duration: 00:37:34
+🧭 Overview
+The meeting addressed the evaluation of native AgentCore runtime, memory, observability, and evaluation capabilities; the subsequent comparison with LangSmith and LangFuse; and the environment and workshop required to run the POC. The group agreed to preserve the existing Freddie model for an apples-to-apples comparison, pursue an AWS account owned and controlled by the team, and use an AWS lab as a temporary fallback while the target environment is resolved.
+Native AgentCore capabilities will first be evaluated against the existing production application on EKS; LangSmith and LangFuse integrations will be assessed afterward for incremental value.
+The POC requires a fully controlled AWS account or environment, with account ownership, AgentCore availability, tenancy, network security, identity boundaries, and provisioning responsibilities still requiring confirmation.
+A limited Seller Services Guide chatbot or comparable public-data application will support the workshop, with observability and evaluation as the primary focus.
+An AWS lab experiment of up to three days will proceed if a suitable internal environment cannot be accessed promptly; reusable scripts or pre-canned vector data may reduce repeated setup.
+✅ Action Items
+[ ] Use the sources guide and related Seller Services Guide content as the knowledge base.
+[ ] Send the workshop materials and sample content for selection.
+[ ] Follow up by email regarding the preferred POC environment.
+[ ] Contact Chris to discuss the BOC environment.
+[ ] Confirm with the CTS team and relevant platform stakeholders whether a new or existing AWS account can be used and fully controlled by the team.
+[ ] Obtain AgentCore provisioning, network-security, identity-boundary, and service-availability guidance from Mike’s team and the responsible platform contacts.
+[ ] Consult Alex about Dev Enclave availability, AgentCore enablement, and Agent 4 support.
+[ ] Start the AWS lab experiment for up to three days if the internal environment is unavailable.
+[ ] Prepare a reusable script or pre-canned vector data to avoid repeating lab initialization steps.
+📝 Main Topics
+1. AgentCore Baseline and External Integration Evaluation
+Background:
+The team expanded its initial LangSmith and LangFuse evaluation to include AgentCore because of the AWS-first direction. The comparison must distinguish native AgentCore capabilities from the incremental value of external integrations.
+Key Conclusion/Resolution:
+The evaluation will begin with native AgentCore functionality covering runtime, memory, observability, and evaluations. The existing Freddie model and production behavior will remain unchanged wherever possible, and the working agent currently running on EKS will be deployed to the AgentCore runtime. LangSmith and LangFuse will be assessed only after the native baseline is established.
+Responsibility and Actions/Follow-up Actions:
+The team will assess AgentCore observability before deciding whether external tooling provides additional value.
+The team will compare LangSmith and LangFuse integration capabilities with the native AgentCore baseline.
+The team will examine AgentCore monitoring and tracing capabilities, including their relevance to evaluation and regression testing.
+Native functionality will be tested before any external integration, consistent with the recommendation to try the native function first.
+Unresolved Matters:
+The final external integration product, deployment model, and detailed account-level implementation approach were not selected.
+2. POC Account Ownership and AgentCore Environment
+Background:
+The POC needs an environment in which the team can own and manage the complete deployment, including AgentCore Gateway and AgentCore resources. The current production deployment on EKS does not, by itself, provide the required POC control model.
+Key Conclusion/Resolution:
+The preferred target is a Freddy or otherwise controlled internal AWS account. The options include using an existing V2 AWS account owned by the team or requesting a new account without requiring a specific GPD account or Platinum setup. A new Freddy account was described as taking approximately three to four days after the request is initiated.
+Responsibility and Actions/Follow-up Actions:
+Hamid will work with Chris to obtain CTS alignment on the account and environment direction.
+Chris will coordinate with Mike and the relevant teams, with a meeting involving Mike and the team arranged if needed.
+The team will request guidance for establishing its own GPA/account and enabling the required capabilities.
+Mike Ryan and the responsible platform contacts will provide the network and security information required for provisioning.
+The team will follow up with Mike’s team, Rob Pietrich, or the appropriate owner regarding AgentCore availability and enablement.
+Unresolved Matters:
+AgentCore was not yet available in the relevant environment. The team still needs confirmation of its availability, enablement timing, whether it is limited to V2, and whether it is offered as an enterprise multi-tenant capability or as a separate service or account for each team. Network security, identity, governance boundaries, and the applicable identity-provider subscriptions also remain to be confirmed. Shared tenancy was not the expected model.
+3. Workshop and Temporary AWS Lab Approach
+Background:
+The target POC environment may not be ready when experimentation needs to begin. The team therefore discussed an interim workshop focused on agent code, observability, evaluation, and POC planning.
+Key Conclusion/Resolution:
+The team will first determine whether a preferred internal environment, including Dev Enclave, can be used. If access cannot be arranged promptly, the team will use an AWS lab for an initial experiment of up to three days. The lab is an interim experimentation environment rather than the continuing POC environment.
+Responsibility and Actions/Follow-up Actions:
+The workshop will remain within BOC/POC scope; mainstream implementation and native implementation guidance will continue under CGS guidance.
+Workshop materials and sample options will be shared for selection.
+The team will determine whether additional three-day lab periods can be requested if the initial experiment is insufficient.
+Each new lab setup will start without preserving completed work from a previous session.
+The team will use automation or pre-canned vector data where possible to reduce repeated initialization.
+The resulting account and enablement guidance may be retained for future teams or customers that establish similar environments.
+Unresolved Matters:
+The availability of Dev Enclave to the relevant teams, its AgentCore and Agent 4 support, and the possibility of extending the AWS lab period were not confirmed.
+4. Generic Knowledge-Base Use Case and Chatbot Demonstration
+Background:
+The team cannot immediately bring its SSGP code, training, and knowledge-base environment into the temporary workshop. A smaller use case is therefore required to demonstrate AgentCore behavior before the production POC environment is available.
+Key Conclusion/Resolution:
+The initial prototype will be a single chatbot based on selected content from the Seller Services Guide or another generic public-data source. For each question, the chatbot will identify the relevant chapter and use the corresponding knowledge-base content to generate a response. The demonstration will focus on observability and evaluation rather than reproducing the complete production application.
+Responsibility and Actions/Follow-up Actions:
+The team will use the sources guide and related Seller Services Guide material as the knowledge base.
+The team will select several chapters, break down and index the content, place it in a RAG setup, and run the LLMs.
+Speaker1 will provide additional Seller Services Guide information if required.
+The team will consider a LineChain knowledge-base application, a sample page, or the earlier Bedrock and solicit guide POC context where useful.
+The team will evaluate runtime behavior, chapter retrieval, tracing, observability, and evaluation results with the limited chatbot.
+Unresolved Matters:
+The public-data or lab use case may not produce results identical to the Freddy Mac scenario because the temporary environment may use different models from the OpenAI model used through Freddy AI. The reuse of the earlier CGPT or Bedrock POC depends on whether the code and training can run in the selected environment.
+5. Environment Dependencies and Deployment Governance
+Background:
+Deployment depends on account ownership, AgentCore service availability, platform approvals, and security boundaries. The team also needs a clear distinction between the temporary workshop path and the longer-term environment.
+Key Conclusion/Resolution:
+The team will seek a controlled AWS account rather than rely on the temporary lab for sustained work. Creating a new account requires alignment with the CTS team, CGS, and relevant CPS/CDS stakeholders. AgentCore enablement cannot simply be switched on as a marketplace capability; the required deployment and integration setup must be established manually.
+Responsibility and Actions/Follow-up Actions:
+The team will confirm whether an existing CTS, CPS, CDS, or other internal service can support the POC.
+The relevant platform teams will clarify the AgentCore service and tenancy model before provisioning proceeds.
+The team will use the AWS lab only as the fallback while the internal account and environment decision is pending.
+The team will keep the workshop focused on the agent code, observability, and evaluation rather than mainstream deployment.
+Unresolved Matters:
+The final deployment account, AgentCore availability date, service ownership model, network and identity boundaries, and platform approval path remain open.
